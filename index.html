@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ty & Nice</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      background: #f5f0e8;
+      min-height: 100vh;
+      color: #2c2416;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 4rem 2rem;
+    }
+    h1 {
+      font-size: 4.5rem;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      margin-bottom: 0.5rem;
+      font-style: italic;
+    }
+    .subtitle {
+      font-size: 1.4rem;
+      opacity: 0.7;
+      margin-bottom: 3rem;
+      font-weight: 300;
+    }
+    .message {
+      font-size: 1.3rem;
+      max-width: 540px;
+      text-align: center;
+      line-height: 1.8;
+      margin-bottom: 3rem;
+    }
+    .upload-zone {
+      width: 100%;
+      max-width: 500px;
+      padding: 4rem 2rem;
+      border: 1px solid #c9bea8;
+      background: #fdfbf7;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: #8b7355;
+      background: #fff;
+    }
+    .upload-zone input {
+      display: none;
+    }
+    .upload-zone label {
+      cursor: pointer;
+      display: block;
+    }
+    .upload-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+    .upload-text {
+      font-size: 1.4rem;
+      font-style: italic;
+    }
+    .upload-hint {
+      font-size: 1rem;
+      opacity: 0.6;
+      margin-top: 0.5rem;
+    }
+    .progress-container {
+      display: none;
+      width: 100%;
+      max-width: 500px;
+      margin-top: 2rem;
+    }
+    .progress-container.active {
+      display: block;
+    }
+    .file-item {
+      background: #fdfbf7;
+      border: 1px solid #c9bea8;
+      padding: 1rem 1.5rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .file-name {
+      flex: 1;
+      font-size: 1.1rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .file-status {
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+    .file-progress {
+      width: 100%;
+      height: 3px;
+      background: #e5ddd0;
+      margin-top: 0.5rem;
+    }
+    .file-progress-bar {
+      height: 100%;
+      background: #8b7355;
+      width: 0%;
+      transition: width 0.2s;
+    }
+    .file-item.complete .file-progress-bar {
+      background: #5a7247;
+    }
+    .file-item.error .file-progress-bar {
+      background: #a85454;
+    }
+    .thanks {
+      margin-top: 3rem;
+      font-size: 1.2rem;
+      font-style: italic;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <h1>Ty & Nice</h1>
+  <p class="subtitle">June 15, 2024</p>
+  
+  <p class="message">
+    We're collecting videos from our wedding day. 
+    If you captured any moments, we'd be so grateful 
+    if you'd share them with us.
+  </p>
+  
+  <div class="upload-zone" id="uploadZone">
+    <label for="files">
+      <div class="upload-icon">◈</div>
+      <div class="upload-text">Drop videos here</div>
+      <div class="upload-hint">or click to browse</div>
+    </label>
+    <input type="file" id="files" multiple accept="video/*">
+  </div>
+
+  <div class="progress-container" id="progressContainer"></div>
+  
+  <p class="thanks">Thank you for helping us remember.</p>
+
+  <script>
+    const UPLOAD_URL = 'https://tynice-upload.YOUR_WORKER.workers.dev';
+    
+    const zone = document.getElementById('uploadZone');
+    const input = document.getElementById('files');
+    const container = document.getElementById('progressContainer');
+
+    zone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      zone.classList.add('dragover');
+    });
+
+    zone.addEventListener('dragleave', () => {
+      zone.classList.remove('dragover');
+    });
+
+    zone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      zone.classList.remove('dragover');
+      handleFiles(e.dataTransfer.files);
+    });
+
+    input.addEventListener('change', () => {
+      handleFiles(input.files);
+    });
+
+    function handleFiles(files) {
+      container.classList.add('active');
+      Array.from(files).forEach(uploadFile);
+    }
+
+    async function uploadFile(file) {
+      const item = document.createElement('div');
+      item.className = 'file-item';
+      item.innerHTML = `
+        <div style="flex:1">
+          <div class="file-name">${file.name}</div>
+          <div class="file-progress"><div class="file-progress-bar"></div></div>
+        </div>
+        <div class="file-status">0%</div>
+      `;
+      container.appendChild(item);
+
+      const bar = item.querySelector('.file-progress-bar');
+      const status = item.querySelector('.file-status');
+
+      try {
+        const res = await fetch(`${UPLOAD_URL}/presign?filename=${encodeURIComponent(file.name)}&type=${encodeURIComponent(file.type)}`);
+        const { url } = await res.json();
+
+        await new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open('PUT', url);
+          xhr.setRequestHeader('Content-Type', file.type);
+          
+          xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+              const pct = Math.round((e.loaded / e.total) * 100);
+              bar.style.width = pct + '%';
+              status.textContent = pct + '%';
+            }
+          };
+
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              item.classList.add('complete');
+              status.textContent = '✓';
+              resolve();
+            } else {
+              reject(new Error('Upload failed'));
+            }
+          };
+
+          xhr.onerror = () => reject(new Error('Upload failed'));
+          xhr.send(file);
+        });
+      } catch (err) {
+        item.classList.add('error');
+        status.textContent = 'failed';
+      }
+    }
+  </script>
+</body>
+</html>
