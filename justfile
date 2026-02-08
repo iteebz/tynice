@@ -2,10 +2,10 @@ default:
     @just --list
 
 dev:
-    @cd worker && pnpm dev
+    @node server.js
 
 deploy:
-    @cd worker && pnpm deploy
+    @fly deploy
 
 ci:
     @echo "static html - no ci checks"
