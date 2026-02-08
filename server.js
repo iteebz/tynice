@@ -63,7 +63,7 @@ const server = createServer(async (req, res) => {
       
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ uploads, bytes, contributors: uploads }));
-    } catch (err) {
+    } catch (_err) {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ uploads: 0, bytes: 0, contributors: 0 }));
     }
@@ -90,7 +90,7 @@ const server = createServer(async (req, res) => {
       
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify(videos));
-    } catch (err) {
+    } catch (_err) {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify([]));
     }

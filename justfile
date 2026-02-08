@@ -1,6 +1,9 @@
 default:
     @just --list
 
+install:
+    @pnpm install
+
 dev:
     @node server.js
 
@@ -8,4 +11,5 @@ deploy:
     @fly deploy
 
 ci:
-    @echo "static html - no ci checks"
+    @pnpm lint:fix
+    @pnpm typecheck
