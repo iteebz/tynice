@@ -97,20 +97,22 @@
       animation: fadeIn 2s ease-out 0.6s both;
     }
     
-    .upload-zone {
+    .upload-link {
+      display: block;
       width: 100%;
       max-width: 480px;
       padding: 4rem 3rem;
       background: var(--cream);
       border: 1px solid var(--taupe);
       text-align: center;
-      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
       transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
       animation: fadeIn 2s ease-out 0.9s both;
     }
     
-    .upload-zone::before {
+    .upload-link::before {
       content: '';
       position: absolute;
       inset: 8px;
@@ -119,20 +121,17 @@
       transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
-    .upload-zone:hover, .upload-zone.dragover {
+    .upload-link:hover {
       background: #fff;
       border-color: var(--walnut);
       transform: translateY(-2px);
       box-shadow: 0 20px 60px -20px rgba(44, 36, 22, 0.15);
     }
     
-    .upload-zone:hover::before {
+    .upload-link:hover::before {
       inset: 12px;
       border-color: var(--taupe);
     }
-    
-    .upload-zone input { display: none; }
-    .upload-zone label { cursor: pointer; display: block; }
     
     .upload-icon {
       font-size: 2.5rem;
@@ -141,7 +140,7 @@
       transition: opacity 0.3s, transform 0.3s;
     }
     
-    .upload-zone:hover .upload-icon {
+    .upload-link:hover .upload-icon {
       opacity: 0.6;
       transform: translateY(-4px);
     }
@@ -161,185 +160,10 @@
       letter-spacing: 0.1em;
     }
     
-    .progress-section {
-      width: 100%;
-      max-width: 480px;
-      margin-top: 2rem;
-      display: none;
-    }
-    
-    .progress-section.active { display: block; }
-    
-    .file-item {
-      background: var(--cream);
-      border: 1px solid var(--sand);
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 0.75rem;
-      animation: slideUp 0.4s ease-out;
-    }
-    
-    .file-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.75rem;
-    }
-    
-    .file-name {
-      font-size: 1rem;
-      color: var(--espresso);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      flex: 1;
-      margin-right: 1rem;
-    }
-    
-    .file-status {
-      font-size: 0.85rem;
-      color: var(--walnut);
-      font-style: italic;
-    }
-    
-    .progress-track {
-      width: 100%;
-      height: 2px;
-      background: var(--sand);
-      overflow: hidden;
-    }
-    
-    .progress-bar {
-      height: 100%;
-      background: var(--walnut);
-      width: 0%;
-      transition: width 0.3s ease-out;
-    }
-    
-    .file-item.complete .progress-bar { background: #6b8f5e; }
-    .file-item.error .progress-bar { background: #a85454; }
-    
-    .scroll-hint {
-      position: absolute;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      animation: fadeIn 2s ease-out 1.5s both, float 3s ease-in-out infinite 2s;
-    }
-    
-    .scroll-hint span {
-      display: block;
-      font-size: 0.8rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--taupe);
-      margin-bottom: 0.5rem;
-    }
-    
-    .scroll-hint svg {
-      width: 24px;
-      height: 24px;
-      stroke: var(--taupe);
-    }
-
-    .feed {
-      min-height: 100vh;
-      background: var(--linen);
-      padding: 6rem 2rem;
-    }
-    
-    .feed-header {
-      text-align: center;
-      margin-bottom: 4rem;
-    }
-    
-    .feed-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(2rem, 5vw, 3rem);
-      font-weight: 300;
-      font-style: italic;
-      color: var(--espresso);
-      margin-bottom: 1rem;
-    }
-    
-    .feed-stats {
-      display: flex;
-      justify-content: center;
-      gap: 3rem;
-      flex-wrap: wrap;
-    }
-    
-    .stat {
-      text-align: center;
-    }
-    
-    .stat-value {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 2.5rem;
-      font-weight: 300;
-      font-style: italic;
-      color: var(--espresso);
-    }
-    
-    .stat-label {
-      font-size: 0.75rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--walnut);
-    }
-    
-    .feed-grid {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.5rem;
-    }
-    
-    .feed-item {
-      aspect-ratio: 9/16;
-      background: var(--sand);
-      border: 1px solid var(--taupe);
-      overflow: hidden;
-      position: relative;
-      cursor: pointer;
-      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s;
-    }
-    
-    .feed-item:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 30px 60px -20px rgba(44, 36, 22, 0.2);
-    }
-    
-    .feed-item video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    
-    .feed-item .placeholder {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3rem;
-      color: var(--taupe);
-    }
-    
-    .feed-item .overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, transparent 60%, rgba(44, 36, 22, 0.4) 100%);
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    
-    .feed-item:hover .overlay { opacity: 1; }
-    
     .footer {
       text-align: center;
       padding: 4rem 2rem;
-      background: var(--cream);
+      background: var(--linen);
     }
     
     .footer-text {
@@ -354,21 +178,9 @@
       to { opacity: 1; transform: translateY(0); }
     }
     
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    @keyframes float {
-      0%, 100% { transform: translateX(-50%) translateY(0); }
-      50% { transform: translateX(-50%) translateY(8px); }
-    }
-    
     @media (max-width: 600px) {
       .hero { padding: 3rem 1.5rem; }
-      .upload-zone { padding: 3rem 2rem; }
-      .feed { padding: 4rem 1rem; }
-      .feed-grid { grid-template-columns: 1fr; max-width: 400px; }
+      .upload-link { padding: 3rem 2rem; }
     }
   </style>
 </head>
@@ -383,188 +195,15 @@
       the magic of that day.
     </p>
     
-    <div class="upload-zone" id="uploadZone">
-      <label for="files">
-        <div class="upload-icon">✦</div>
-        <div class="upload-text">Share your memories</div>
-        <div class="upload-hint">drop videos or tap to browse</div>
-      </label>
-      <input type="file" id="files" multiple accept="video/*,image/*">
-    </div>
-
-    <div class="progress-section" id="progressSection"></div>
-    
-    <div class="scroll-hint">
-      <span>Scroll</span>
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5">
-        <path d="M12 5v14M5 12l7 7 7-7"/>
-      </svg>
-    </div>
-  </section>
-
-  <section class="feed" id="feed">
-    <div class="feed-header">
-      <h2 class="feed-title">Shared Moments</h2>
-      <div class="feed-stats">
-        <div class="stat">
-          <div class="stat-value" id="videoCount">—</div>
-          <div class="stat-label">Memories</div>
-        </div>
-        <div class="stat">
-          <div class="stat-value" id="totalSize">—</div>
-          <div class="stat-label">Captured</div>
-        </div>
-        <div class="stat">
-          <div class="stat-value" id="contributors">—</div>
-          <div class="stat-label">Contributors</div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="feed-grid" id="feedGrid"></div>
+    <a class="upload-link" href="GOOGLE_DRIVE_FOLDER_LINK" target="_blank" rel="noopener">
+      <div class="upload-icon">✦</div>
+      <div class="upload-text">Share your memories</div>
+      <div class="upload-hint">upload to our shared folder</div>
+    </a>
   </section>
 
   <footer class="footer">
     <p class="footer-text">Thank you for being part of our story.</p>
   </footer>
-
-  <script>
-    const zone = document.getElementById('uploadZone');
-    const input = document.getElementById('files');
-    const section = document.getElementById('progressSection');
-
-    zone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      zone.classList.add('dragover');
-    });
-
-    zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
-
-    zone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      zone.classList.remove('dragover');
-      handleFiles(e.dataTransfer.files);
-    });
-
-    input.addEventListener('change', () => handleFiles(input.files));
-
-    function handleFiles(files) {
-      section.classList.add('active');
-      Array.from(files).forEach(uploadFile);
-    }
-
-    async function uploadFile(file) {
-      const item = document.createElement('div');
-      item.className = 'file-item';
-      item.innerHTML = `
-        <div class="file-header">
-          <div class="file-name">${file.name}</div>
-          <div class="file-status">preparing...</div>
-        </div>
-        <div class="progress-track"><div class="progress-bar"></div></div>
-      `;
-      section.appendChild(item);
-
-      const bar = item.querySelector('.progress-bar');
-      const status = item.querySelector('.file-status');
-
-      try {
-        const params = new URLSearchParams({
-          filename: file.name,
-          type: file.type,
-          size: file.size
-        });
-        
-        const res = await fetch(`/presign?${params}`);
-        const { url } = await res.json();
-        
-        status.textContent = 'uploading...';
-
-        await new Promise((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-          xhr.open('PUT', url);
-          xhr.setRequestHeader('Content-Type', file.type);
-          
-          xhr.upload.onprogress = (e) => {
-            if (e.lengthComputable) {
-              const pct = Math.round((e.loaded / e.total) * 100);
-              bar.style.width = pct + '%';
-              status.textContent = pct + '%';
-            }
-          };
-
-          xhr.onload = () => {
-            if (xhr.status >= 200 && xhr.status < 300) {
-              item.classList.add('complete');
-              status.textContent = 'uploaded ✓';
-              loadStats();
-              resolve();
-            } else {
-              reject(new Error('Upload failed'));
-            }
-          };
-
-          xhr.onerror = () => reject(new Error('Network error'));
-          xhr.send(file);
-        });
-      } catch (err) {
-        item.classList.add('error');
-        status.textContent = 'failed';
-      }
-    }
-
-    const formatBytes = (bytes) => {
-      if (!bytes) return '—';
-      const k = 1024;
-      const sizes = ['B', 'KB', 'MB', 'GB'];
-      const i = Math.floor(Math.log(bytes) / Math.log(k));
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-    };
-
-    function loadStats() {
-      fetch('/stats')
-        .then(r => r.json())
-        .then(data => {
-          document.getElementById('videoCount').textContent = data.uploads || '—';
-          document.getElementById('totalSize').textContent = formatBytes(data.bytes);
-          document.getElementById('contributors').textContent = data.contributors || '—';
-        })
-        .catch(() => {});
-    }
-
-    function loadGallery() {
-      fetch('/gallery')
-        .then(r => r.json())
-        .then(videos => {
-          const grid = document.getElementById('feedGrid');
-          grid.innerHTML = '';
-          
-          if (!videos.length) {
-            grid.innerHTML = '<div class="feed-item"><div class="placeholder">✦</div></div>'.repeat(3);
-            return;
-          }
-          
-          videos.forEach(video => {
-            const item = document.createElement('div');
-            item.className = 'feed-item';
-            item.innerHTML = `
-              <video src="${video.url}" muted loop playsinline preload="metadata"></video>
-              <div class="overlay"></div>
-            `;
-            const vid = item.querySelector('video');
-            item.addEventListener('mouseenter', () => vid.play());
-            item.addEventListener('mouseleave', () => { vid.pause(); vid.currentTime = 0; });
-            grid.appendChild(item);
-          });
-        })
-        .catch(() => {
-          document.getElementById('feedGrid').innerHTML = 
-            '<div class="feed-item"><div class="placeholder">✦</div></div>'.repeat(3);
-        });
-    }
-
-    loadStats();
-    loadGallery();
-  </script>
 </body>
 </html>
