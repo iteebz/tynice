@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #f6f3ee;
+      --bg: #f5efe6;
       --surface: #fcfaf7;
       --line: #ddd3c6;
       --line-soft: #ece4d9;
@@ -34,21 +34,12 @@
 
     body {
       min-height: 100vh;
-      background: var(--bg);
+      background: linear-gradient(180deg, #f8f3ea 0%, var(--bg) 100%);
       color: var(--text);
       font-family: 'Manrope', system-ui, sans-serif;
       line-height: 1.55;
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
-    }
-
-    .grain {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      opacity: 0.08;
-      background-image: radial-gradient(#000 0.45px, transparent 0.45px);
-      background-size: 4px 4px;
     }
 
     main {
@@ -288,7 +279,6 @@
   </style>
 </head>
 <body>
-  <div class="grain" aria-hidden="true"></div>
   <main>
     <section class="hero">
       <p class="kicker">Wedding Archive</p>
