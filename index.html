@@ -141,9 +141,15 @@
 
     .layout {
       display: grid;
-      grid-template-columns: minmax(310px, 0.9fr) minmax(0, 1.35fr);
-      gap: 1rem;
+      grid-template-columns: minmax(310px, 0.35fr) 1fr;
+      gap: 2rem;
       align-items: start;
+    }
+
+    /* Sticky sidebar for uploader */
+    .layout>.panel:first-of-type {
+      position: sticky;
+      top: 2rem;
     }
 
     .panel {
@@ -245,21 +251,20 @@
     }
 
     .gallery-feed {
-      height: min(72vh, 820px);
-      overflow-y: auto;
-      scroll-snap-type: y mandatory;
-      display: grid;
-      gap: 0.75rem;
-      padding-right: 0.25rem;
+      column-count: 3;
+      column-gap: 1rem;
     }
 
-    .gallery-feed::-webkit-scrollbar {
-      width: 9px;
+    @media (max-width: 1100px) {
+      .gallery-feed {
+        column-count: 2;
+      }
     }
 
-    .gallery-feed::-webkit-scrollbar-thumb {
-      background: var(--taupe);
-      border: 2px solid var(--linen);
+    @media (max-width: 600px) {
+      .gallery-feed {
+        column-count: 1;
+      }
     }
 
     .card {
@@ -268,10 +273,15 @@
       background: #111;
       overflow: hidden;
       box-shadow: var(--shadow);
-      scroll-snap-align: start;
-      min-height: min(78vh, 760px);
-      display: grid;
-      place-items: stretch;
+      margin-bottom: 1rem;
+      break-inside: avoid;
+      cursor: zoom-in;
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.6);
     }
 
     .card-media {
@@ -324,7 +334,57 @@
       }
     }
 
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 9, 7, 0.95);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      backdrop-filter: blur(5px);
+    }
+
+    .lightbox.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .lightbox-content {
+      position: relative;
+      max-width: 94vw;
+      max-height: 94vh;
+    }
+
+    .lightbox-media {
+      max-width: 100%;
+      max-height: 90vh;
+      display: block;
+      box-shadow: 0 0 80px rgba(0, 0, 0, 0.8);
+      border: 1px solid var(--taupe);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: -2.5rem;
+      right: 0;
+      color: var(--cream);
+      background: none;
+      border: none;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
     @media (max-width: 900px) {
+      .layout>.panel:first-of-type {
+        position: static;
+      }
+
       main {
         padding: 2rem 0 3rem;
       }
@@ -339,14 +399,6 @@
 
       .panel h2 {
         font-size: 1.75rem;
-      }
-
-      .gallery-feed {
-        height: 72vh;
-      }
-
-      .card {
-        min-height: 66vh;
       }
     }
   </style>
@@ -395,6 +447,13 @@
       </section>
     </section>
   </main>
+
+  <div id="lightbox" class="lightbox" aria-hidden="true">
+    <div class="lightbox-content">
+      <button id="lightbox-close" class="lightbox-close">×</button>
+      <div id="lightbox-container"></div>
+    </div>
+  </div>
 
   <script>
     const fileInput = document.getElementById('file-input');
@@ -468,11 +527,57 @@
 
           card.append(media, meta);
           galleryEl.append(card);
+
+          card.addEventListener('click', () => openLightbox(item));
         }
       } catch (error) {
         galleryEl.innerHTML = '<div class="empty">waiting for memories...</div>';
       }
     }
+
+    // Lightbox Logic
+    const lightbox = document.getElementById('lightbox');
+    const lightboxContainer = document.getElementById('lightbox-container');
+    const lightboxClose = document.getElementById('lightbox-close');
+
+    function openLightbox(item) {
+      lightboxContainer.innerHTML = '';
+      let media;
+
+      if (item.mediaType === 'image') {
+        media = document.createElement('img');
+        media.src = item.url;
+        media.className = 'lightbox-media';
+      } else {
+        media = document.createElement('video');
+        media.src = item.url;
+        media.controls = true;
+        media.autoplay = true;
+        media.className = 'lightbox-media';
+      }
+
+      lightboxContainer.appendChild(media);
+      lightbox.classList.add('active');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('active');
+      lightbox.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        lightboxContainer.innerHTML = ''; // Cleanup video
+      }, 300);
+    }
+
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox();
+    });
 
     function uploadWithProgress(url, file) {
       return new Promise((resolve, reject) => {
