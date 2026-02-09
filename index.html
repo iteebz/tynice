@@ -325,6 +325,14 @@
     }
 
     @media (max-width: 900px) {
+      main {
+        padding: 2rem 0 3rem;
+      }
+
+      .hero {
+        padding: 0 0.5rem;
+      }
+
       .layout {
         grid-template-columns: 1fr;
       }
@@ -434,14 +442,14 @@
     }
 
     async function loadGallery() {
-      galleryEl.innerHTML = '<div class="empty">Loading gallery...</div>';
+      galleryEl.innerHTML = '<div class="empty">gathering memories...</div>';
       try {
         const res = await fetch('/gallery', { cache: 'no-store' });
         if (!res.ok) throw new Error('Gallery unavailable');
         const items = await res.json();
 
         if (!Array.isArray(items) || items.length === 0) {
-          galleryEl.innerHTML = '<div class="empty">No uploads yet.</div>';
+          galleryEl.innerHTML = '<div class="empty">no uploads yet — be the first to share a moment</div>';
           return;
         }
 
@@ -461,7 +469,7 @@
           galleryEl.append(card);
         }
       } catch (error) {
-        galleryEl.innerHTML = '<div class="empty">Gallery failed to load. Check R2 config.</div>';
+        galleryEl.innerHTML = '<div class="empty">waiting for memories...</div>';
       }
     }
 
