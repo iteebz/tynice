@@ -69,10 +69,23 @@
     h1 {
       font-family: 'Cormorant Garamond', serif;
       font-size: clamp(3rem, 10vw, 5.8rem);
-      font-weight: 400;
+      font-weight: 300;
       font-style: italic;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       color: var(--espresso);
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: -0.3rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--taupe), transparent);
     }
 
     .kicker {
