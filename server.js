@@ -104,6 +104,14 @@ function sanitizeFilename(name) {
   return (name || 'upload.mp4').replace(/[^a-zA-Z0-9._-]/g, '-').slice(0, 120);
 }
 
+function inferMediaTypeByKey(key = '') {
+  const ext = extname(key).toLowerCase();
+  if (['.jpg', '.jpeg', '.png', '.gif', '.webp', '.avif', '.heic', '.heif'].includes(ext)) {
+    return 'image';
+  }
+  return 'video';
+}
+
 function publicUrlForKey(key) {
   if (!R2_PUBLIC_URL) return null;
   const base = R2_PUBLIC_URL.endsWith('/') ? R2_PUBLIC_URL.slice(0, -1) : R2_PUBLIC_URL;
@@ -123,8 +131,8 @@ async function handlePresign(reqUrl, res) {
   const type = reqUrl.searchParams.get('type') || 'video/mp4';
   const size = Number(reqUrl.searchParams.get('size') || 0);
 
-  if (!type.startsWith('video/')) {
-    sendJson(res, 400, { error: 'Only video uploads are allowed' });
+  if (!type.startsWith('video/') && !type.startsWith('image/')) {
+    sendJson(res, 400, { error: 'Only image and video uploads are allowed' });
     return;
   }
 
@@ -181,6 +189,7 @@ async function handleGallery(res) {
       key: item.Key,
       size: item.Size || 0,
       lastModified: item.LastModified || null,
+      mediaType: inferMediaTypeByKey(item.Key),
       url: await resolvePlaybackUrl(item.Key),
     })),
   );
