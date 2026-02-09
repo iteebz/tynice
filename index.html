@@ -356,7 +356,7 @@
   <main>
     <section class="hero">
       <p class="kicker">a wedding archive</p>
-      <h1>ty &amp; nice</h1>
+      <h1>tynice</h1>
       <p class="hero-copy">
         Our videographer lost the original footage. If you captured any moments from the day,
         please share them here — we're piecing the story back together, one memory at a time.
@@ -390,7 +390,7 @@
 
       <section class="panel" aria-labelledby="gallery-title">
         <h2 id="gallery-title">gallery</h2>
-        <p class="gallery-note">newest first</p>
+        <p id="memory-count" class="gallery-note"></p>
         <div id="gallery" class="gallery-feed"></div>
       </section>
     </section>
@@ -453,6 +453,7 @@
           return;
         }
 
+        document.getElementById('memory-count').textContent = `${items.length} memories shared`;
         galleryEl.innerHTML = '';
         for (const item of items) {
           const card = document.createElement('article');
