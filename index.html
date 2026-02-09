@@ -14,220 +14,371 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Crimson+Pro:ital,wght@0,200;0,300;1,200;1,300&display=swap" rel="stylesheet">
   <style>
     :root {
-      --cream: #faf8f5;
-      --linen: #f5f0e8;
-      --sand: #e8e0d4;
-      --taupe: #c9bea8;
-      --walnut: #8b7355;
-      --espresso: #5a4a3a;
-      --ink: #2c2416;
+      --paper: #f9f6ef;
+      --sand: #eee5d7;
+      --stone: #cfbea3;
+      --wood: #88694f;
+      --ink: #231b12;
+      --mist: rgba(35, 27, 18, 0.06);
+      --gold: #aa845f;
     }
-    
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    html { scroll-behavior: smooth; }
-    
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: 'Crimson Pro', 'Cormorant Garamond', Georgia, serif;
-      background: var(--cream);
+      font-family: 'Crimson Pro', Georgia, serif;
       color: var(--ink);
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-    
-    .hero {
+      background:
+        radial-gradient(circle at 10% 10%, rgba(170, 132, 95, 0.08), transparent 36%),
+        radial-gradient(circle at 90% 20%, rgba(136, 105, 79, 0.06), transparent 38%),
+        var(--paper);
+      line-height: 1.5;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-      position: relative;
-      background: linear-gradient(180deg, var(--cream) 0%, var(--linen) 100%);
     }
-    
-    .hero::before {
-      content: '';
+
+    main {
+      width: min(1040px, 92vw);
+      margin: 0 auto;
+      padding: 3rem 0 4rem;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 2.25rem;
+      animation: lift 700ms ease-out;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      font-size: clamp(2.8rem, 10vw, 5.8rem);
+      color: #3a2a1e;
+    }
+
+    .subtitle {
+      margin-top: 0.3rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wood);
+      font-size: 0.83rem;
+    }
+
+    .lead-video {
+      margin: 0 auto 1.75rem;
+      border: 1px solid var(--stone);
+      background: #000;
+      box-shadow: 0 28px 70px -40px rgba(35, 27, 18, 0.5);
+      width: min(920px, 100%);
+    }
+
+    .lead-video video {
+      width: 100%;
+      display: block;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+    }
+
+    .panel {
+      border: 1px solid var(--stone);
+      background: rgba(255, 255, 255, 0.48);
+      backdrop-filter: blur(3px);
+      padding: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .panel h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.75rem;
+      font-style: italic;
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+      color: #3f3124;
+    }
+
+    .uploader-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      align-items: center;
+    }
+
+    input[type="file"] {
+      flex: 1 1 230px;
+      border: 1px solid var(--stone);
+      background: #fff;
+      padding: 0.6rem;
+      color: var(--ink);
+    }
+
+    button {
+      border: 1px solid #795a3f;
+      background: linear-gradient(180deg, #9a7554, #7f6147);
+      color: #fff;
+      font-family: 'Crimson Pro', serif;
+      font-size: 0.98rem;
+      padding: 0.62rem 1rem;
+      cursor: pointer;
+      transition: transform 120ms ease, filter 180ms ease;
+    }
+
+    button:hover:enabled { filter: brightness(1.04); transform: translateY(-1px); }
+    button:disabled { opacity: 0.7; cursor: not-allowed; }
+
+    .status {
+      margin-top: 0.75rem;
+      color: #584530;
+      min-height: 1.3rem;
+      font-size: 0.95rem;
+    }
+
+    .progress-track {
+      margin-top: 0.75rem;
+      height: 7px;
+      background: var(--mist);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(136, 105, 79, 0.2);
+      display: none;
+    }
+
+    .progress-fill {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), #c39d76);
+      transition: width 120ms linear;
+    }
+
+    .gallery-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .gallery-note {
+      font-size: 0.9rem;
+      color: #66513b;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 0.85rem;
+    }
+
+    .card {
+      border: 1px solid var(--stone);
+      background: #111;
+      overflow: hidden;
+      aspect-ratio: 9/16;
+      position: relative;
+    }
+
+    .card video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card-meta {
       position: absolute;
-      top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L30 60M0 30L60 30' stroke='%23c9bea8' stroke-width='0.5' opacity='0.15'/%3E%3C/svg%3E");
-      pointer-events: none;
+      padding: 0.55rem 0.6rem;
+      font-size: 0.76rem;
+      color: #f4efe8;
+      background: linear-gradient(180deg, transparent, rgba(10, 8, 6, 0.77));
+      letter-spacing: 0.02em;
     }
-    
-    .monogram {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(6rem, 15vw, 12rem);
-      font-weight: 300;
-      font-style: italic;
-      letter-spacing: 0.1em;
-      color: var(--espresso);
-      margin-bottom: 1rem;
-      position: relative;
-      animation: fadeIn 2s ease-out;
-    }
-    
-    .monogram::after {
-      content: '';
-      position: absolute;
-      bottom: -0.5rem;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--taupe), transparent);
-    }
-    
-    .date {
-      font-size: 1.1rem;
-      letter-spacing: 0.4em;
-      text-transform: uppercase;
-      color: var(--walnut);
-      margin-bottom: 3rem;
-      animation: fadeIn 2s ease-out 0.3s both;
-    }
-    
-    .message {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(1.3rem, 3vw, 1.8rem);
-      font-weight: 300;
-      font-style: italic;
-      max-width: 600px;
+
+    .empty {
+      border: 1px dashed var(--stone);
+      padding: 1.25rem;
       text-align: center;
-      line-height: 2;
-      color: var(--espresso);
-      margin-bottom: 4rem;
-      animation: fadeIn 2s ease-out 0.6s both;
+      color: #6d5640;
+      background: rgba(255, 255, 255, 0.35);
     }
-    
-    .video-section {
-      width: 100%;
-      max-width: 800px;
-      margin-bottom: 4rem;
-      animation: fadeIn 2s ease-out 0.9s both;
-    }
-    
-    .video-section video {
-      width: 100%;
-      border: 1px solid var(--taupe);
-      background: var(--ink);
-    }
-    
-    .upload-link {
-      display: block;
-      width: 100%;
-      max-width: 480px;
-      padding: 4rem 3rem;
-      background: var(--cream);
-      border: 1px solid var(--taupe);
-      text-align: center;
-      text-decoration: none;
-      color: inherit;
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      animation: fadeIn 2s ease-out 1.2s both;
-    }
-    
-    .upload-link::before {
-      content: '';
-      position: absolute;
-      inset: 8px;
-      border: 1px solid var(--sand);
-      pointer-events: none;
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .upload-link:hover {
-      background: #fff;
-      border-color: var(--walnut);
-      transform: translateY(-2px);
-      box-shadow: 0 20px 60px -20px rgba(44, 36, 22, 0.15);
-    }
-    
-    .upload-link:hover::before {
-      inset: 12px;
-      border-color: var(--taupe);
-    }
-    
-    .upload-icon {
-      font-size: 2.5rem;
-      margin-bottom: 1.5rem;
-      opacity: 0.4;
-      transition: opacity 0.3s, transform 0.3s;
-    }
-    
-    .upload-link:hover .upload-icon {
-      opacity: 0.6;
-      transform: translateY(-4px);
-    }
-    
-    .upload-text {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.6rem;
-      font-style: italic;
-      font-weight: 300;
-      color: var(--espresso);
-      margin-bottom: 0.5rem;
-    }
-    
-    .upload-hint {
-      font-size: 0.9rem;
-      color: var(--walnut);
-      letter-spacing: 0.1em;
-    }
-    
-    .footer {
-      text-align: center;
-      padding: 4rem 2rem;
-      background: var(--linen);
-    }
-    
-    .footer-text {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.4rem;
-      font-style: italic;
-      color: var(--espresso);
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
+
+    @keyframes lift {
+      from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    
-    @media (max-width: 600px) {
-      .hero { padding: 3rem 1.5rem; }
-      .upload-link { padding: 3rem 2rem; }
+
+    @media (max-width: 680px) {
+      main { padding-top: 2rem; }
+      .panel { padding: 1rem; }
     }
   </style>
 </head>
 <body>
-  <section class="hero">
-    <h1 class="monogram">T & J</h1>
-    <p class="date">Our Wedding Day</p>
-    
-    <p class="message">
-      We're gathering the moments you captured.<br>
-      Every clip brings us closer to reliving<br>
-      the magic of that day.
-    </p>
-    
-    <div class="video-section">
+  <main>
+    <section class="hero">
+      <h1>tynice</h1>
+      <p class="subtitle">wedding memories</p>
+    </section>
+
+    <section class="lead-video" aria-label="Featured video">
       <video controls playsinline preload="metadata" autoplay loop>
         <source src="https://pub-fe7625b2c4df4b5aa7c637299e6a569a.r2.dev/tynice.mp4" type="video/mp4">
       </video>
-    </div>
-    
-    <a class="upload-link" href="https://drive.google.com/drive/folders/1xqD2M31rL8NxA8Q9rtzHahPYqJCdLUsW?usp=drive_link" target="_blank" rel="noopener">
-      <div class="upload-icon">✦</div>
-      <div class="upload-text">Share your memories</div>
-      <div class="upload-hint">upload to our shared folder</div>
-    </a>
-  </section>
+    </section>
 
-  <footer class="footer">
-    <p class="footer-text">Thank you for being part of our story.</p>
-  </footer>
+    <section class="panel" aria-labelledby="upload-title">
+      <h2 id="upload-title">Share a Video</h2>
+      <div class="uploader-row">
+        <input id="file-input" type="file" accept="video/*">
+        <button id="upload-btn" type="button">Upload to Gallery</button>
+      </div>
+      <div id="status" class="status" aria-live="polite"></div>
+      <div id="progress-track" class="progress-track" aria-hidden="true">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="gallery-title">
+      <div class="gallery-head">
+        <h2 id="gallery-title">Gallery</h2>
+        <button id="refresh-btn" type="button">Refresh</button>
+      </div>
+      <p class="gallery-note">Newest first. Videos play inline with controls.</p>
+      <div id="gallery" class="gallery-grid"></div>
+    </section>
+  </main>
+
+  <script>
+    const fileInput = document.getElementById('file-input');
+    const uploadBtn = document.getElementById('upload-btn');
+    const refreshBtn = document.getElementById('refresh-btn');
+    const statusEl = document.getElementById('status');
+    const galleryEl = document.getElementById('gallery');
+    const progressTrack = document.getElementById('progress-track');
+    const progressFill = document.getElementById('progress-fill');
+
+    function setStatus(message, isError = false) {
+      statusEl.textContent = message;
+      statusEl.style.color = isError ? '#8a2f2f' : '#584530';
+    }
+
+    function formatBytes(bytes) {
+      if (!Number.isFinite(bytes) || bytes < 1) return '0 B';
+      const units = ['B', 'KB', 'MB', 'GB'];
+      let value = bytes;
+      let idx = 0;
+      while (value >= 1024 && idx < units.length - 1) {
+        value /= 1024;
+        idx += 1;
+      }
+      return `${value.toFixed(value >= 100 || idx === 0 ? 0 : 1)} ${units[idx]}`;
+    }
+
+    async function loadGallery() {
+      galleryEl.innerHTML = '<div class="empty">Loading videos...</div>';
+      try {
+        const res = await fetch('/gallery', { cache: 'no-store' });
+        if (!res.ok) throw new Error('Gallery unavailable');
+        const items = await res.json();
+
+        if (!Array.isArray(items) || items.length === 0) {
+          galleryEl.innerHTML = '<div class="empty">No videos yet. Upload the first one.</div>';
+          return;
+        }
+
+        galleryEl.innerHTML = '';
+        for (const item of items) {
+          const card = document.createElement('article');
+          card.className = 'card';
+
+          const video = document.createElement('video');
+          video.src = item.url;
+          video.controls = true;
+          video.preload = 'metadata';
+          video.playsInline = true;
+
+          const meta = document.createElement('div');
+          meta.className = 'card-meta';
+          meta.textContent = `${formatBytes(item.size)} · ${new Date(item.lastModified || Date.now()).toLocaleDateString()}`;
+
+          card.append(video, meta);
+          galleryEl.append(card);
+        }
+      } catch (error) {
+        galleryEl.innerHTML = '<div class="empty">Gallery failed to load. Check R2 config.</div>';
+      }
+    }
+
+    function uploadWithProgress(url, file) {
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', url);
+        xhr.setRequestHeader('Content-Type', file.type || 'video/mp4');
+
+        xhr.upload.onprogress = (event) => {
+          if (!event.lengthComputable) return;
+          const pct = Math.max(0, Math.min(100, (event.loaded / event.total) * 100));
+          progressFill.style.width = `${pct}%`;
+        };
+
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) resolve();
+          else reject(new Error(`Upload failed (${xhr.status})`));
+        };
+
+        xhr.onerror = () => reject(new Error('Network error during upload'));
+        xhr.send(file);
+      });
+    }
+
+    async function handleUpload() {
+      const file = fileInput.files?.[0];
+      if (!file) {
+        setStatus('Pick a video file first.', true);
+        return;
+      }
+
+      uploadBtn.disabled = true;
+      progressTrack.style.display = 'block';
+      progressFill.style.width = '0%';
+      setStatus('Preparing upload...');
+
+      try {
+        const query = new URLSearchParams({
+          filename: file.name,
+          type: file.type || 'video/mp4',
+          size: String(file.size),
+        });
+
+        const presignRes = await fetch(`/presign?${query.toString()}`, { cache: 'no-store' });
+        if (!presignRes.ok) {
+          const err = await presignRes.json().catch(() => ({}));
+          throw new Error(err.error || 'Could not prepare upload');
+        }
+
+        const { url } = await presignRes.json();
+        setStatus('Uploading...');
+        await uploadWithProgress(url, file);
+
+        setStatus('Upload complete. Refreshing gallery.');
+        fileInput.value = '';
+        await loadGallery();
+      } catch (error) {
+        setStatus(error.message || 'Upload failed', true);
+      } finally {
+        uploadBtn.disabled = false;
+        setTimeout(() => {
+          progressTrack.style.display = 'none';
+          progressFill.style.width = '0%';
+        }, 900);
+      }
+    }
+
+    uploadBtn.addEventListener('click', handleUpload);
+    refreshBtn.addEventListener('click', loadGallery);
+    loadGallery();
+  </script>
 </body>
 </html>
