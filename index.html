@@ -13,177 +13,244 @@
   <link rel="apple-touch-icon" href="/tynice.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Crimson+Pro:ital,wght@0,200;0,300;1,200;1,300&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
   <style>
     :root {
-      --paper: #f9f6ef;
-      --sand: #eee5d7;
-      --stone: #cfbea3;
-      --wood: #88694f;
-      --ink: #231b12;
-      --mist: rgba(35, 27, 18, 0.06);
-      --gold: #aa845f;
+      --bg: #f6f3ee;
+      --surface: #fcfaf7;
+      --line: #ddd3c6;
+      --line-soft: #ece4d9;
+      --text: #2a241d;
+      --muted: #75695c;
+      --accent: #6f5641;
+      --danger: #8a2f2f;
+      --shadow: 0 16px 36px -28px rgba(25, 19, 13, 0.45);
+      --radius-lg: 22px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Crimson Pro', Georgia, serif;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at 10% 10%, rgba(170, 132, 95, 0.08), transparent 36%),
-        radial-gradient(circle at 90% 20%, rgba(136, 105, 79, 0.06), transparent 38%),
-        var(--paper);
-      line-height: 1.5;
       min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Manrope', system-ui, sans-serif;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.08;
+      background-image: radial-gradient(#000 0.45px, transparent 0.45px);
+      background-size: 4px 4px;
     }
 
     main {
       width: min(1040px, 92vw);
       margin: 0 auto;
-      padding: 3rem 0 4rem;
+      padding: 3.2rem 0 4.2rem;
+      position: relative;
+      z-index: 1;
     }
 
     .hero {
+      max-width: 760px;
+      margin: 0 auto 2rem;
       text-align: center;
-      margin-bottom: 2.25rem;
-      animation: lift 700ms ease-out;
+      animation: enter 520ms ease-out both;
     }
 
     h1 {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
+      font-family: 'Instrument Serif', serif;
+      font-size: clamp(3rem, 8.2vw, 5.6rem);
       font-weight: 400;
-      letter-spacing: 0.08em;
-      font-size: clamp(2.8rem, 10vw, 5.8rem);
-      color: #3a2a1e;
+      letter-spacing: 0.03em;
+      margin-bottom: 0.35rem;
     }
 
-    .subtitle {
-      margin-top: 0.3rem;
-      letter-spacing: 0.22em;
+    .kicker {
       text-transform: uppercase;
-      color: var(--wood);
-      font-size: 0.83rem;
+      letter-spacing: 0.24em;
+      font-size: 0.74rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
     }
 
-    .lead-video {
-      margin: 0 auto 1.75rem;
-      border: 1px solid var(--stone);
-      background: #000;
-      box-shadow: 0 28px 70px -40px rgba(35, 27, 18, 0.5);
-      width: min(920px, 100%);
+    .hero-copy {
+      font-size: clamp(1rem, 1.9vw, 1.16rem);
+      color: var(--muted);
+      max-width: 690px;
+      margin: 0 auto;
+    }
+
+    .frame {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      margin-bottom: 1rem;
+      border-radius: var(--radius-lg);
+      overflow: clip;
+    }
+
+    .frame-inner {
+      border: 1px solid var(--line-soft);
+      margin: 0.75rem;
+      background: #0d0b09;
+      border-radius: calc(var(--radius-lg) - 8px);
+      overflow: hidden;
     }
 
     .lead-video video {
       width: 100%;
       display: block;
-      aspect-ratio: 16/9;
+      aspect-ratio: 16 / 9;
       object-fit: cover;
     }
 
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(310px, 0.9fr) minmax(0, 1.35fr);
+      gap: 1rem;
+      align-items: start;
+    }
+
     .panel {
-      border: 1px solid var(--stone);
-      background: rgba(255, 255, 255, 0.48);
-      backdrop-filter: blur(3px);
-      padding: 1.2rem;
-      margin-bottom: 1.5rem;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      padding: 1rem;
+      box-shadow: var(--shadow);
+      border-radius: var(--radius-md);
+      animation: enter 640ms ease-out both;
     }
 
     .panel h2 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.75rem;
-      font-style: italic;
+      font-family: 'Instrument Serif', serif;
       font-weight: 400;
-      margin-bottom: 0.75rem;
-      color: #3f3124;
+      font-size: 2rem;
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.01em;
+    }
+
+    .copy {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 0.8rem;
     }
 
     .uploader-row {
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.8rem;
-      align-items: center;
+      flex-direction: column;
+      gap: 0.65rem;
     }
 
-    input[type="file"] {
-      flex: 1 1 230px;
-      border: 1px solid var(--stone);
+    input[type='file'] {
+      width: 100%;
+      border: 1px solid var(--line);
       background: #fff;
-      padding: 0.6rem;
-      color: var(--ink);
+      padding: 0.58rem;
+      color: var(--text);
+      font-family: 'Manrope', sans-serif;
+      font-size: 0.92rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
     }
 
     button {
-      border: 1px solid #795a3f;
-      background: linear-gradient(180deg, #9a7554, #7f6147);
+      border: 1px solid var(--accent);
+      background: var(--accent);
       color: #fff;
-      font-family: 'Crimson Pro', serif;
-      font-size: 0.98rem;
-      padding: 0.62rem 1rem;
+      padding: 0.56rem 0.84rem;
+      font-family: 'Manrope', sans-serif;
+      font-size: 0.89rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
       cursor: pointer;
-      transition: transform 120ms ease, filter 180ms ease;
+      transition: filter 160ms ease;
+      border-radius: 999px;
     }
 
-    button:hover:enabled { filter: brightness(1.04); transform: translateY(-1px); }
+    button:hover:enabled { filter: brightness(1.08); }
     button:disabled { opacity: 0.7; cursor: not-allowed; }
 
     .status {
-      margin-top: 0.75rem;
-      color: #584530;
+      margin-top: 0.65rem;
       min-height: 1.3rem;
-      font-size: 0.95rem;
+      color: var(--muted);
+      font-size: 0.9rem;
     }
 
     .progress-track {
-      margin-top: 0.75rem;
-      height: 7px;
-      background: var(--mist);
-      border-radius: 999px;
+      margin-top: 0.62rem;
+      height: 6px;
+      border: 1px solid var(--line);
+      background: #f1ece5;
       overflow: hidden;
-      border: 1px solid rgba(136, 105, 79, 0.2);
       display: none;
+      border-radius: 999px;
     }
 
     .progress-fill {
       width: 0;
       height: 100%;
-      background: linear-gradient(90deg, var(--gold), #c39d76);
+      background: linear-gradient(90deg, #7a5e45, #b99370);
       transition: width 120ms linear;
     }
 
-    .gallery-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      margin-bottom: 0.8rem;
-    }
-
     .gallery-note {
-      font-size: 0.9rem;
-      color: #66513b;
+      color: var(--muted);
+      font-size: 0.89rem;
+      margin-bottom: 0.78rem;
     }
 
-    .gallery-grid {
+    .gallery-feed {
+      height: min(72vh, 820px);
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-      gap: 0.85rem;
+      gap: 0.75rem;
+      padding-right: 0.25rem;
+    }
+
+    .gallery-feed::-webkit-scrollbar {
+      width: 9px;
+    }
+
+    .gallery-feed::-webkit-scrollbar-thumb {
+      background: #c6b6a2;
+      border-radius: 999px;
+      border: 2px solid #f5efe7;
     }
 
     .card {
-      border: 1px solid var(--stone);
+      position: relative;
+      border: 1px solid var(--line);
       background: #111;
       overflow: hidden;
-      aspect-ratio: 9/16;
-      position: relative;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow);
+      scroll-snap-align: start;
+      min-height: min(78vh, 760px);
+      display: grid;
+      place-items: stretch;
     }
 
-    .card video {
+    .card-media {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
+      background: #111;
     }
 
     .card-meta {
@@ -191,64 +258,77 @@
       left: 0;
       right: 0;
       bottom: 0;
-      padding: 0.55rem 0.6rem;
-      font-size: 0.76rem;
-      color: #f4efe8;
-      background: linear-gradient(180deg, transparent, rgba(10, 8, 6, 0.77));
-      letter-spacing: 0.02em;
+      color: #f4eee5;
+      background: linear-gradient(180deg, transparent, rgba(11, 9, 7, 0.82));
+      padding: 0.65rem 0.75rem;
+      font-size: 0.74rem;
+      font-weight: 500;
     }
 
     .empty {
-      border: 1px dashed var(--stone);
-      padding: 1.25rem;
+      border: 1px dashed var(--line);
+      background: #fff;
+      padding: 1rem;
       text-align: center;
-      color: #6d5640;
-      background: rgba(255, 255, 255, 0.35);
+      color: var(--muted);
+      border-radius: var(--radius-sm);
     }
 
-    @keyframes lift {
+    @keyframes enter {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    @media (max-width: 680px) {
-      main { padding-top: 2rem; }
-      .panel { padding: 1rem; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .panel h2 { font-size: 1.75rem; }
+      .gallery-feed { height: 72vh; }
+      .card { min-height: 66vh; }
     }
   </style>
 </head>
 <body>
+  <div class="grain" aria-hidden="true"></div>
   <main>
     <section class="hero">
+      <p class="kicker">Wedding Archive</p>
       <h1>tynice</h1>
-      <p class="subtitle">wedding memories</p>
+      <p class="hero-copy">
+        Our videographer lost the original footage. If you have any clips or photos from the day,
+        please upload them here so we can piece the story back together.
+      </p>
     </section>
 
-    <section class="lead-video" aria-label="Featured video">
-      <video controls playsinline preload="metadata" autoplay loop>
-        <source src="https://pub-fe7625b2c4df4b5aa7c637299e6a569a.r2.dev/tynice.mp4" type="video/mp4">
-      </video>
-    </section>
-
-    <section class="panel" aria-labelledby="upload-title">
-      <h2 id="upload-title">Share a Video</h2>
-      <div class="uploader-row">
-        <input id="file-input" type="file" accept="video/*">
-        <button id="upload-btn" type="button">Upload to Gallery</button>
-      </div>
-      <div id="status" class="status" aria-live="polite"></div>
-      <div id="progress-track" class="progress-track" aria-hidden="true">
-        <div id="progress-fill" class="progress-fill"></div>
+    <section class="frame" aria-label="Featured video">
+      <div class="frame-inner lead-video">
+        <video controls playsinline preload="metadata" autoplay loop>
+          <source src="https://pub-fe7625b2c4df4b5aa7c637299e6a569a.r2.dev/tynice.mp4" type="video/mp4">
+        </video>
       </div>
     </section>
 
-    <section class="panel" aria-labelledby="gallery-title">
-      <div class="gallery-head">
+    <section class="layout">
+      <section class="panel" aria-labelledby="upload-title">
+        <h2 id="upload-title">Share</h2>
+        <p class="copy">Upload photos or videos directly to the archive.</p>
+        <div class="uploader-row">
+          <input id="file-input" type="file" accept="image/*,video/*">
+          <div class="actions">
+            <button id="upload-btn" type="button">Upload</button>
+            <button id="refresh-btn" type="button">Refresh</button>
+          </div>
+        </div>
+        <div id="status" class="status" aria-live="polite"></div>
+        <div id="progress-track" class="progress-track" aria-hidden="true">
+          <div id="progress-fill" class="progress-fill"></div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="gallery-title">
         <h2 id="gallery-title">Gallery</h2>
-        <button id="refresh-btn" type="button">Refresh</button>
-      </div>
-      <p class="gallery-note">Newest first. Videos play inline with controls.</p>
-      <div id="gallery" class="gallery-grid"></div>
+        <p class="gallery-note">Scroll feed. Newest first.</p>
+        <div id="gallery" class="gallery-feed"></div>
+      </section>
     </section>
   </main>
 
@@ -263,7 +343,7 @@
 
     function setStatus(message, isError = false) {
       statusEl.textContent = message;
-      statusEl.style.color = isError ? '#8a2f2f' : '#584530';
+      statusEl.style.color = isError ? '#8a2f2f' : '#75695c';
     }
 
     function formatBytes(bytes) {
@@ -278,15 +358,34 @@
       return `${value.toFixed(value >= 100 || idx === 0 ? 0 : 1)} ${units[idx]}`;
     }
 
+    function mediaNodeFor(item) {
+      if (item.mediaType === 'image') {
+        const img = document.createElement('img');
+        img.src = item.url;
+        img.alt = 'wedding memory';
+        img.loading = 'lazy';
+        img.className = 'card-media';
+        return img;
+      }
+
+      const video = document.createElement('video');
+      video.src = item.url;
+      video.controls = true;
+      video.preload = 'metadata';
+      video.playsInline = true;
+      video.className = 'card-media';
+      return video;
+    }
+
     async function loadGallery() {
-      galleryEl.innerHTML = '<div class="empty">Loading videos...</div>';
+      galleryEl.innerHTML = '<div class="empty">Loading gallery...</div>';
       try {
         const res = await fetch('/gallery', { cache: 'no-store' });
         if (!res.ok) throw new Error('Gallery unavailable');
         const items = await res.json();
 
         if (!Array.isArray(items) || items.length === 0) {
-          galleryEl.innerHTML = '<div class="empty">No videos yet. Upload the first one.</div>';
+          galleryEl.innerHTML = '<div class="empty">No uploads yet.</div>';
           return;
         }
 
@@ -295,17 +394,14 @@
           const card = document.createElement('article');
           card.className = 'card';
 
-          const video = document.createElement('video');
-          video.src = item.url;
-          video.controls = true;
-          video.preload = 'metadata';
-          video.playsInline = true;
+          const media = mediaNodeFor(item);
 
           const meta = document.createElement('div');
           meta.className = 'card-meta';
-          meta.textContent = `${formatBytes(item.size)} · ${new Date(item.lastModified || Date.now()).toLocaleDateString()}`;
+          const kind = item.mediaType === 'image' ? 'photo' : 'video';
+          meta.textContent = `${kind} · ${formatBytes(item.size)} · ${new Date(item.lastModified || Date.now()).toLocaleDateString()}`;
 
-          card.append(video, meta);
+          card.append(media, meta);
           galleryEl.append(card);
         }
       } catch (error) {
@@ -317,7 +413,7 @@
       return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('PUT', url);
-        xhr.setRequestHeader('Content-Type', file.type || 'video/mp4');
+        xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
 
         xhr.upload.onprogress = (event) => {
           if (!event.lengthComputable) return;
@@ -338,7 +434,7 @@
     async function handleUpload() {
       const file = fileInput.files?.[0];
       if (!file) {
-        setStatus('Pick a video file first.', true);
+        setStatus('Pick a file first.', true);
         return;
       }
 
@@ -350,7 +446,7 @@
       try {
         const query = new URLSearchParams({
           filename: file.name,
-          type: file.type || 'video/mp4',
+          type: file.type || 'application/octet-stream',
           size: String(file.size),
         });
 
