@@ -9,211 +9,172 @@
   <meta property="og:description" content="tynice">
   <meta name="twitter:title" content="tynice">
   <meta name="twitter:description" content="tynice">
-  <link rel="icon" type="image/png" href="/tynice.png">
-  <link rel="apple-touch-icon" href="/tynice.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Crimson+Pro:ital,wght@0,200;0,300;1,200;1,300&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #f6f3ee;
-      --surface: #fcfaf7;
-      --line: #ddd3c6;
-      --line-soft: #ece4d9;
-      --text: #2a241d;
-      --muted: #75695c;
-      --accent: #6f5641;
-      --danger: #8a2f2f;
-      --shadow: 0 16px 36px -28px rgba(25, 19, 13, 0.45);
+      --paper: #f9f6ef;
+      --sand: #eee5d7;
+      --stone: #cfbea3;
+      --wood: #88694f;
+      --ink: #231b12;
+      --mist: rgba(35, 27, 18, 0.06);
+      --gold: #aa845f;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
+      font-family: 'Crimson Pro', Georgia, serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(170, 132, 95, 0.08), transparent 36%),
+        radial-gradient(circle at 90% 20%, rgba(136, 105, 79, 0.06), transparent 38%),
+        var(--paper);
+      line-height: 1.5;
       min-height: 100vh;
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Manrope', system-ui, sans-serif;
-      line-height: 1.55;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
-    }
-
-    .grain {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      opacity: 0.08;
-      background-image: radial-gradient(#000 0.45px, transparent 0.45px);
-      background-size: 4px 4px;
     }
 
     main {
       width: min(1040px, 92vw);
       margin: 0 auto;
-      padding: 3.2rem 0 4.2rem;
-      position: relative;
-      z-index: 1;
+      padding: 3rem 0 4rem;
     }
 
     .hero {
-      max-width: 760px;
-      margin: 0 auto 2rem;
       text-align: center;
-      animation: enter 520ms ease-out both;
+      margin-bottom: 2.25rem;
+      animation: lift 700ms ease-out;
     }
 
     h1 {
-      font-family: 'Instrument Serif', serif;
-      font-size: clamp(3rem, 8.2vw, 5.6rem);
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
       font-weight: 400;
-      letter-spacing: 0.03em;
-      margin-bottom: 0.35rem;
+      letter-spacing: 0.08em;
+      font-size: clamp(2.8rem, 10vw, 5.8rem);
+      color: #3a2a1e;
     }
 
-    .kicker {
+    .subtitle {
+      margin-top: 0.3rem;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
-      letter-spacing: 0.24em;
-      font-size: 0.74rem;
-      color: var(--muted);
-      margin-bottom: 1rem;
+      color: var(--wood);
+      font-size: 0.83rem;
     }
 
-    .hero-copy {
-      font-size: clamp(1rem, 1.9vw, 1.16rem);
-      color: var(--muted);
-      max-width: 690px;
-      margin: 0 auto;
-    }
-
-    .frame {
-      border: 1px solid var(--line);
-      background: var(--surface);
-      box-shadow: var(--shadow);
-      margin-bottom: 1rem;
-    }
-
-    .frame-inner {
-      border: 1px solid var(--line-soft);
-      margin: 0.75rem;
-      background: #0d0b09;
+    .lead-video {
+      margin: 0 auto 1.75rem;
+      border: 1px solid var(--stone);
+      background: #000;
+      box-shadow: 0 28px 70px -40px rgba(35, 27, 18, 0.5);
+      width: min(920px, 100%);
     }
 
     .lead-video video {
       width: 100%;
       display: block;
-      aspect-ratio: 16 / 9;
+      aspect-ratio: 16/9;
       object-fit: cover;
     }
 
-    .layout {
-      display: grid;
-      grid-template-columns: minmax(310px, 0.9fr) minmax(0, 1.35fr);
-      gap: 1rem;
-      align-items: start;
-    }
-
     .panel {
-      border: 1px solid var(--line);
-      background: var(--surface);
-      padding: 1rem;
-      box-shadow: var(--shadow);
-      animation: enter 640ms ease-out both;
+      border: 1px solid var(--stone);
+      background: rgba(255, 255, 255, 0.48);
+      backdrop-filter: blur(3px);
+      padding: 1.2rem;
+      margin-bottom: 1.5rem;
     }
 
     .panel h2 {
-      font-family: 'Instrument Serif', serif;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.75rem;
+      font-style: italic;
       font-weight: 400;
-      font-size: 2rem;
-      margin-bottom: 0.4rem;
-      letter-spacing: 0.01em;
-    }
-
-    .copy {
-      color: var(--muted);
-      font-size: 0.95rem;
-      margin-bottom: 0.8rem;
+      margin-bottom: 0.75rem;
+      color: #3f3124;
     }
 
     .uploader-row {
       display: flex;
-      flex-direction: column;
-      gap: 0.65rem;
-    }
-
-    input[type='file'] {
-      width: 100%;
-      border: 1px solid var(--line);
-      background: #fff;
-      padding: 0.58rem;
-      color: var(--text);
-      font-family: 'Manrope', sans-serif;
-      font-size: 0.92rem;
-    }
-
-    .actions {
-      display: flex;
-      gap: 0.5rem;
       flex-wrap: wrap;
+      gap: 0.8rem;
+      align-items: center;
+    }
+
+    input[type="file"] {
+      flex: 1 1 230px;
+      border: 1px solid var(--stone);
+      background: #fff;
+      padding: 0.6rem;
+      color: var(--ink);
     }
 
     button {
-      border: 1px solid var(--accent);
-      background: var(--accent);
+      border: 1px solid #795a3f;
+      background: linear-gradient(180deg, #9a7554, #7f6147);
       color: #fff;
-      padding: 0.56rem 0.84rem;
-      font-family: 'Manrope', sans-serif;
-      font-size: 0.89rem;
-      font-weight: 600;
-      letter-spacing: 0.01em;
+      font-family: 'Crimson Pro', serif;
+      font-size: 0.98rem;
+      padding: 0.62rem 1rem;
       cursor: pointer;
-      transition: filter 160ms ease;
+      transition: transform 120ms ease, filter 180ms ease;
     }
 
-    button:hover:enabled { filter: brightness(1.08); }
+    button:hover:enabled { filter: brightness(1.04); transform: translateY(-1px); }
     button:disabled { opacity: 0.7; cursor: not-allowed; }
 
     .status {
-      margin-top: 0.65rem;
+      margin-top: 0.75rem;
+      color: #584530;
       min-height: 1.3rem;
-      color: var(--muted);
-      font-size: 0.9rem;
+      font-size: 0.95rem;
     }
 
     .progress-track {
-      margin-top: 0.62rem;
-      height: 6px;
-      border: 1px solid var(--line);
-      background: #f1ece5;
+      margin-top: 0.75rem;
+      height: 7px;
+      background: var(--mist);
+      border-radius: 999px;
       overflow: hidden;
+      border: 1px solid rgba(136, 105, 79, 0.2);
       display: none;
     }
 
     .progress-fill {
       width: 0;
       height: 100%;
-      background: linear-gradient(90deg, #7a5e45, #b99370);
+      background: linear-gradient(90deg, var(--gold), #c39d76);
       transition: width 120ms linear;
     }
 
+    .gallery-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.8rem;
+    }
+
     .gallery-note {
-      color: var(--muted);
-      font-size: 0.89rem;
-      margin-bottom: 0.78rem;
+      font-size: 0.9rem;
+      color: #66513b;
     }
 
     .gallery-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
-      gap: 0.7rem;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 0.85rem;
     }
 
     .card {
-      position: relative;
-      border: 1px solid var(--line);
+      border: 1px solid var(--stone);
       background: #111;
       overflow: hidden;
-      aspect-ratio: 9 / 16;
+      aspect-ratio: 9/16;
+      position: relative;
     }
 
     .card video {
@@ -228,75 +189,64 @@
       left: 0;
       right: 0;
       bottom: 0;
-      color: #f4eee5;
-      background: linear-gradient(180deg, transparent, rgba(11, 9, 7, 0.82));
-      padding: 0.5rem 0.55rem;
-      font-size: 0.72rem;
-      font-weight: 500;
+      padding: 0.55rem 0.6rem;
+      font-size: 0.76rem;
+      color: #f4efe8;
+      background: linear-gradient(180deg, transparent, rgba(10, 8, 6, 0.77));
+      letter-spacing: 0.02em;
     }
 
     .empty {
-      border: 1px dashed var(--line);
-      background: #fff;
-      padding: 1rem;
+      border: 1px dashed var(--stone);
+      padding: 1.25rem;
       text-align: center;
-      color: var(--muted);
-      grid-column: 1 / -1;
+      color: #6d5640;
+      background: rgba(255, 255, 255, 0.35);
     }
 
-    @keyframes enter {
+    @keyframes lift {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    @media (max-width: 900px) {
-      .layout { grid-template-columns: 1fr; }
-      .panel h2 { font-size: 1.75rem; }
+    @media (max-width: 680px) {
+      main { padding-top: 2rem; }
+      .panel { padding: 1rem; }
     }
   </style>
 </head>
 <body>
-  <div class="grain" aria-hidden="true"></div>
   <main>
     <section class="hero">
-      <p class="kicker">Wedding Archive</p>
       <h1>tynice</h1>
-      <p class="hero-copy">
-        Our videographer lost the original footage. If you have any clips from the day,
-        please upload them here so we can piece the story back together.
-      </p>
+      <p class="subtitle">wedding memories</p>
     </section>
 
-    <section class="frame" aria-label="Featured video">
-      <div class="frame-inner lead-video">
-        <video controls playsinline preload="metadata" autoplay loop>
-          <source src="https://pub-fe7625b2c4df4b5aa7c637299e6a569a.r2.dev/tynice.mp4" type="video/mp4">
-        </video>
+    <section class="lead-video" aria-label="Featured video">
+      <video controls playsinline preload="metadata" autoplay loop>
+        <source src="https://pub-fe7625b2c4df4b5aa7c637299e6a569a.r2.dev/tynice.mp4" type="video/mp4">
+      </video>
+    </section>
+
+    <section class="panel" aria-labelledby="upload-title">
+      <h2 id="upload-title">Share a Video</h2>
+      <div class="uploader-row">
+        <input id="file-input" type="file" accept="video/*">
+        <button id="upload-btn" type="button">Upload to Gallery</button>
+      </div>
+      <div id="status" class="status" aria-live="polite"></div>
+      <div id="progress-track" class="progress-track" aria-hidden="true">
+        <div id="progress-fill" class="progress-fill"></div>
       </div>
     </section>
 
-    <section class="layout">
-      <section class="panel" aria-labelledby="upload-title">
-        <h2 id="upload-title">Share a Video</h2>
-        <p class="copy">Direct upload. Private link not needed. Thank you for helping us recover these memories.</p>
-        <div class="uploader-row">
-          <input id="file-input" type="file" accept="video/*">
-          <div class="actions">
-            <button id="upload-btn" type="button">Upload</button>
-            <button id="refresh-btn" type="button">Refresh</button>
-          </div>
-        </div>
-        <div id="status" class="status" aria-live="polite"></div>
-        <div id="progress-track" class="progress-track" aria-hidden="true">
-          <div id="progress-fill" class="progress-fill"></div>
-        </div>
-      </section>
-
-      <section class="panel" aria-labelledby="gallery-title">
+    <section class="panel" aria-labelledby="gallery-title">
+      <div class="gallery-head">
         <h2 id="gallery-title">Gallery</h2>
-        <p class="gallery-note">Newest first.</p>
-        <div id="gallery" class="gallery-grid"></div>
-      </section>
+        <button id="refresh-btn" type="button">Refresh</button>
+      </div>
+      <p class="gallery-note">Newest first. Videos play inline with controls.</p>
+      <div id="gallery" class="gallery-grid"></div>
     </section>
   </main>
 
@@ -311,7 +261,7 @@
 
     function setStatus(message, isError = false) {
       statusEl.textContent = message;
-      statusEl.style.color = isError ? '#8a2f2f' : '#75695c';
+      statusEl.style.color = isError ? '#8a2f2f' : '#584530';
     }
 
     function formatBytes(bytes) {
