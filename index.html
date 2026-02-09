@@ -19,18 +19,17 @@
     rel="stylesheet">
   <style>
     :root {
-      --bg: #f5efe6;
-      --surface: #fcfaf7;
-      --line: #ddd3c6;
-      --line-soft: #ece4d9;
-      --text: #2a241d;
-      --muted: #75695c;
-      --accent: #6f5641;
-      --danger: #8a2f2f;
-      --shadow: 0 16px 36px -28px rgba(25, 19, 13, 0.45);
-      --radius-lg: 22px;
-      --radius-md: 14px;
-      --radius-sm: 10px;
+      --cream: #faf8f5;
+      --linen: #f5f0e8;
+      --sand: #e8e0d4;
+      --taupe: #c9bea8;
+      --walnut: #8b7355;
+      --espresso: #5a4a3a;
+      --ink: #2c2416;
+      --shadow: 0 28px 70px -40px rgba(35, 27, 18, 0.5);
+      --radius-lg: 0;
+      --radius-md: 0;
+      --radius-sm: 0;
     }
 
     * {
@@ -41,8 +40,11 @@
 
     body {
       min-height: 100vh;
-      background: linear-gradient(180deg, #f8f3ea 0%, var(--bg) 100%);
-      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(170, 132, 95, 0.08), transparent 36%),
+        radial-gradient(circle at 90% 20%, rgba(136, 105, 79, 0.06), transparent 38%),
+        var(--cream);
+      color: var(--ink);
       font-family: 'Crimson Pro', Georgia, serif;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
@@ -70,39 +72,36 @@
       font-weight: 400;
       font-style: italic;
       letter-spacing: 0.08em;
-      margin-bottom: 0.35rem;
+      color: var(--espresso);
     }
 
     .kicker {
       text-transform: uppercase;
       letter-spacing: 0.24em;
-      font-size: 0.74rem;
-      color: var(--muted);
-      margin-bottom: 1rem;
+      font-size: 0.83rem;
+      color: var(--walnut);
+      margin-bottom: 0.3rem;
     }
 
     .hero-copy {
       font-size: clamp(1rem, 1.9vw, 1.16rem);
-      color: var(--muted);
+      color: var(--espresso);
       max-width: 690px;
       margin: 0 auto;
+      line-height: 1.8;
     }
 
     .frame {
-      border: 1px solid var(--line);
-      background: var(--surface);
+      border: 1px solid var(--taupe);
+      background: var(--cream);
       box-shadow: var(--shadow);
-      margin-bottom: 1rem;
-      border-radius: var(--radius-lg);
-      overflow: clip;
+      margin-bottom: 1.5rem;
     }
 
     .frame-inner {
-      border: 1px solid var(--line-soft);
-      margin: 0.75rem;
-      background: #0d0b09;
-      border-radius: calc(var(--radius-lg) - 8px);
-      overflow: hidden;
+      border: 1px solid var(--sand);
+      margin: 0;
+      background: #000;
     }
 
     .lead-video video {
@@ -120,11 +119,11 @@
     }
 
     .panel {
-      border: 1px solid var(--line);
-      background: var(--surface);
-      padding: 1rem;
+      border: 1px solid var(--taupe);
+      background: rgba(255, 255, 255, 0.48);
+      backdrop-filter: blur(3px);
+      padding: 1.2rem;
       box-shadow: var(--shadow);
-      border-radius: var(--radius-md);
       animation: enter 640ms ease-out both;
     }
 
@@ -138,7 +137,7 @@
     }
 
     .copy {
-      color: var(--muted);
+      color: var(--espresso);
       font-size: 0.95rem;
       margin-bottom: 0.8rem;
     }
@@ -151,13 +150,12 @@
 
     input[type='file'] {
       width: 100%;
-      border: 1px solid var(--line);
+      border: 1px solid var(--taupe);
       background: #fff;
       padding: 0.6rem;
-      color: var(--text);
+      color: var(--ink);
       font-family: 'Crimson Pro', serif;
       font-size: 1rem;
-      border-radius: var(--radius-sm);
     }
 
     .actions {
@@ -167,7 +165,7 @@
     }
 
     button {
-      border: 1px solid var(--accent);
+      border: 1px solid var(--walnut);
       background: linear-gradient(180deg, #9a7554, #7f6147);
       color: #fff;
       padding: 0.62rem 1rem;
@@ -177,7 +175,6 @@
       letter-spacing: 0.02em;
       cursor: pointer;
       transition: transform 120ms ease, filter 180ms ease;
-      border-radius: 999px;
     }
 
     button:hover:enabled {
@@ -193,31 +190,30 @@
     .status {
       margin-top: 0.65rem;
       min-height: 1.3rem;
-      color: var(--muted);
-      font-size: 0.9rem;
+      color: var(--espresso);
+      font-size: 0.95rem;
     }
 
     .progress-track {
-      margin-top: 0.62rem;
-      height: 6px;
-      border: 1px solid var(--line);
-      background: #f1ece5;
+      margin-top: 0.75rem;
+      height: 7px;
+      border: 1px solid rgba(136, 105, 79, 0.2);
+      background: var(--sand);
       overflow: hidden;
       display: none;
-      border-radius: 999px;
     }
 
     .progress-fill {
       width: 0;
       height: 100%;
-      background: linear-gradient(90deg, #7a5e45, #b99370);
+      background: linear-gradient(90deg, var(--walnut), #c39d76);
       transition: width 120ms linear;
     }
 
     .gallery-note {
-      color: var(--muted);
-      font-size: 0.89rem;
-      margin-bottom: 0.78rem;
+      color: var(--espresso);
+      font-size: 0.9rem;
+      margin-bottom: 0.8rem;
     }
 
     .gallery-feed {
@@ -234,17 +230,15 @@
     }
 
     .gallery-feed::-webkit-scrollbar-thumb {
-      background: #c6b6a2;
-      border-radius: 999px;
-      border: 2px solid #f5efe7;
+      background: var(--taupe);
+      border: 2px solid var(--linen);
     }
 
     .card {
       position: relative;
-      border: 1px solid var(--line);
+      border: 1px solid var(--taupe);
       background: #111;
       overflow: hidden;
-      border-radius: var(--radius-md);
       box-shadow: var(--shadow);
       scroll-snap-align: start;
       min-height: min(78vh, 760px);
@@ -273,12 +267,11 @@
     }
 
     .empty {
-      border: 1px dashed var(--line);
-      background: #fff;
-      padding: 1rem;
+      border: 1px dashed var(--taupe);
+      background: var(--cream);
+      padding: 1.5rem;
       text-align: center;
-      color: var(--muted);
-      border-radius: var(--radius-sm);
+      color: var(--espresso);
     }
 
     @keyframes enter {
@@ -316,11 +309,11 @@
 <body>
   <main>
     <section class="hero">
-      <p class="kicker">Wedding Archive</p>
-      <h1>tynice</h1>
+      <p class="kicker">a wedding archive</p>
+      <h1>ty &amp; nice</h1>
       <p class="hero-copy">
-        Our videographer lost the original footage. If you have any clips or photos from the day,
-        please upload them here so we can piece the story back together.
+        Our videographer lost the original footage. If you captured any moments from the day,
+        please share them here — we're piecing the story back together, one memory at a time.
       </p>
     </section>
 
@@ -334,8 +327,8 @@
 
     <section class="layout">
       <section class="panel" aria-labelledby="upload-title">
-        <h2 id="upload-title">Share</h2>
-        <p class="copy">Upload photos or videos directly to the archive.</p>
+        <h2 id="upload-title">share</h2>
+        <p class="copy">Upload your photos and videos to our collection.</p>
         <div class="uploader-row">
           <input id="file-input" type="file" accept="image/*,video/*">
           <div class="actions">
@@ -350,8 +343,8 @@
       </section>
 
       <section class="panel" aria-labelledby="gallery-title">
-        <h2 id="gallery-title">Gallery</h2>
-        <p class="gallery-note">Scroll feed. Newest first.</p>
+        <h2 id="gallery-title">gallery</h2>
+        <p class="gallery-note">newest first</p>
         <div id="gallery" class="gallery-feed"></div>
       </section>
     </section>
