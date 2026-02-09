@@ -97,6 +97,19 @@
       animation: fadeIn 2s ease-out 0.6s both;
     }
     
+    .video-section {
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 4rem;
+      animation: fadeIn 2s ease-out 0.9s both;
+    }
+    
+    .video-section video {
+      width: 100%;
+      border: 1px solid var(--taupe);
+      background: var(--ink);
+    }
+    
     .upload-link {
       display: block;
       width: 100%;
@@ -109,7 +122,7 @@
       color: inherit;
       transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
-      animation: fadeIn 2s ease-out 0.9s both;
+      animation: fadeIn 2s ease-out 1.2s both;
     }
     
     .upload-link::before {
@@ -194,6 +207,12 @@
       Every clip brings us closer to reliving<br>
       the magic of that day.
     </p>
+    
+    <div class="video-section">
+      <video controls playsinline preload="metadata">
+        <source src="/tynice.mp4" type="video/mp4">
+      </video>
+    </div>
     
     <a class="upload-link" href="https://drive.google.com/drive/folders/1xqD2M31rL8NxA8Q9rtzHahPYqJCdLUsW?usp=drive_link" target="_blank" rel="noopener">
       <div class="upload-icon">✦</div>
