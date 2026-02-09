@@ -70,9 +70,8 @@
 
     .hero {
       max-width: 760px;
-      margin: 0 auto 2rem;
+      margin: 0 auto 2.5rem;
       text-align: center;
-      animation: enter 520ms ease-out both;
     }
 
     h1 {
@@ -103,6 +102,11 @@
       font-size: 0.83rem;
       color: var(--walnut);
       margin-bottom: 0.3rem;
+      animation: fadeIn 1.2s ease-out both;
+    }
+
+    h1 {
+      animation: fadeIn 1.8s ease-out 0.2s both;
     }
 
     .hero-copy {
@@ -111,6 +115,7 @@
       max-width: 690px;
       margin: 0 auto;
       line-height: 1.8;
+      animation: fadeIn 2s ease-out 0.5s both;
     }
 
     .frame {
@@ -305,6 +310,16 @@
       to {
         opacity: 1;
         transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
       }
     }
 
