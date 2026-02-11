@@ -304,6 +304,71 @@
       font-weight: 500;
     }
 
+    .gallery-preview {
+      margin-top: 1.2rem;
+      display: none;
+    }
+
+    .gallery-preview.has-items {
+      display: block;
+    }
+
+    .preview-collage {
+      position: relative;
+      height: 72px;
+      display: flex;
+      gap: 0;
+    }
+
+    .preview-thumb {
+      height: 100%;
+      flex: 1;
+      object-fit: cover;
+      border: 1px solid var(--sand);
+      margin-right: -1px;
+      filter: saturate(0.85);
+      transition: filter 0.3s ease, opacity 0.3s ease;
+    }
+
+    .preview-collage:hover .preview-thumb {
+      filter: saturate(1);
+    }
+
+    .preview-collage::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(250, 248, 245, 0.6));
+      pointer-events: none;
+    }
+
+    .preview-link {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-top: 0.55rem;
+      color: var(--walnut);
+      font-size: 0.85rem;
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      text-transform: lowercase;
+      transition: color 0.2s;
+    }
+
+    .preview-link:hover {
+      color: var(--espresso);
+    }
+
+    .preview-link svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.2s ease;
+    }
+
+    .preview-link:hover svg {
+      transform: translateX(2px);
+    }
+
     .empty {
       border: 1px dashed var(--taupe);
       background: var(--cream);
@@ -438,6 +503,7 @@
         <div id="progress-track" class="progress-track" aria-hidden="true">
           <div id="progress-fill" class="progress-fill"></div>
         </div>
+        <div id="gallery-preview" class="gallery-preview"></div>
       </section>
 
       <section class="panel" aria-labelledby="gallery-title">
@@ -530,9 +596,39 @@
 
           card.addEventListener('click', () => openLightbox(item));
         }
+        updatePreview(items);
       } catch (error) {
         galleryEl.innerHTML = '<div class="empty">waiting for memories...</div>';
       }
+    }
+
+    function updatePreview(items) {
+      const preview = document.getElementById('gallery-preview');
+      const thumbItems = items.filter(i => i.mediaType === 'image').slice(0, 4);
+      if (thumbItems.length === 0) {
+        preview.classList.remove('has-items');
+        return;
+      }
+
+      preview.innerHTML = '';
+      const collage = document.createElement('div');
+      collage.className = 'preview-collage';
+      for (const item of thumbItems) {
+        const thumb = document.createElement('img');
+        thumb.src = item.url;
+        thumb.className = 'preview-thumb';
+        thumb.alt = '';
+        thumb.loading = 'lazy';
+        collage.appendChild(thumb);
+      }
+      preview.appendChild(collage);
+
+      const link = document.createElement('a');
+      link.href = '#gallery-title';
+      link.className = 'preview-link';
+      link.innerHTML = `${items.length} memories shared <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
+      preview.appendChild(link);
+      preview.classList.add('has-items');
     }
 
     // Lightbox Logic
