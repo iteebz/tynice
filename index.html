@@ -428,7 +428,7 @@
         <h2 id="upload-title">share</h2>
         <p class="copy">Upload your photos and videos to our collection.</p>
         <div class="uploader-row">
-          <input id="file-input" type="file" accept="image/*,video/*">
+          <input id="file-input" type="file" accept="image/*,video/*" multiple>
           <div class="actions">
             <button id="upload-btn" type="button">Upload</button>
             <button id="refresh-btn" type="button">Refresh</button>
@@ -601,9 +601,30 @@
       });
     }
 
+    async function uploadOneFile(file, index, total) {
+      const label = total > 1 ? `(${index + 1}/${total}) ` : '';
+      setStatus(`${label}Preparing ${file.name}...`);
+
+      const query = new URLSearchParams({
+        filename: file.name,
+        type: file.type || 'application/octet-stream',
+        size: String(file.size),
+      });
+
+      const presignRes = await fetch(`/presign?${query.toString()}`, { cache: 'no-store' });
+      if (!presignRes.ok) {
+        const err = await presignRes.json().catch(() => ({}));
+        throw new Error(err.error || `Could not prepare upload for ${file.name}`);
+      }
+
+      const { url } = await presignRes.json();
+      setStatus(`${label}Uploading ${file.name}...`);
+      await uploadWithProgress(url, file);
+    }
+
     async function handleUpload() {
-      const file = fileInput.files?.[0];
-      if (!file) {
+      const files = Array.from(fileInput.files || []);
+      if (files.length === 0) {
         setStatus('Pick a file first.', true);
         return;
       }
@@ -611,37 +632,34 @@
       uploadBtn.disabled = true;
       progressTrack.style.display = 'block';
       progressFill.style.width = '0%';
-      setStatus('Preparing upload...');
 
-      try {
-        const query = new URLSearchParams({
-          filename: file.name,
-          type: file.type || 'application/octet-stream',
-          size: String(file.size),
-        });
+      let uploaded = 0;
+      let failed = 0;
 
-        const presignRes = await fetch(`/presign?${query.toString()}`, { cache: 'no-store' });
-        if (!presignRes.ok) {
-          const err = await presignRes.json().catch(() => ({}));
-          throw new Error(err.error || 'Could not prepare upload');
+      for (let i = 0; i < files.length; i++) {
+        try {
+          await uploadOneFile(files[i], i, files.length);
+          uploaded++;
+        } catch (error) {
+          failed++;
+          setStatus(`Failed: ${files[i].name} — ${error.message}`, true);
         }
-
-        const { url } = await presignRes.json();
-        setStatus('Uploading...');
-        await uploadWithProgress(url, file);
-
-        setStatus('Upload complete. Refreshing gallery.');
-        fileInput.value = '';
-        await loadGallery();
-      } catch (error) {
-        setStatus(error.message || 'Upload failed', true);
-      } finally {
-        uploadBtn.disabled = false;
-        setTimeout(() => {
-          progressTrack.style.display = 'none';
-          progressFill.style.width = '0%';
-        }, 900);
+        progressFill.style.width = `${((i + 1) / files.length) * 100}%`;
       }
+
+      fileInput.value = '';
+      if (failed === 0) {
+        setStatus(`${uploaded} ${uploaded === 1 ? 'file' : 'files'} uploaded.`);
+      } else {
+        setStatus(`${uploaded} uploaded, ${failed} failed.`, true);
+      }
+
+      await loadGallery();
+      uploadBtn.disabled = false;
+      setTimeout(() => {
+        progressTrack.style.display = 'none';
+        progressFill.style.width = '0%';
+      }, 900);
     }
 
     uploadBtn.addEventListener('click', handleUpload);
