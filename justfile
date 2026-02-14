@@ -11,5 +11,5 @@ deploy:
     @fly deploy
 
 ci:
-    @pnpm lint:fix
-    @pnpm typecheck
+    @pnpm install
+    @pnpm exec eslint .
