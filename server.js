@@ -1,5 +1,5 @@
 import { createServer } from 'http';
-import { readFileSync, existsSync, statSync, writeFileSync, mkdirSync } from 'fs';
+import { readFileSync, existsSync, statSync } from 'fs';
 import { extname, join } from 'path';
 
 const PORT = Number(process.env.PORT || 3000);
@@ -19,8 +19,8 @@ const MIME_TYPES = {
   '.json': 'application/json; charset=utf-8',
 };
 
-const DATA_DIR = process.env.DATA_DIR || '/data';
-const LINKS_FILE = join(DATA_DIR, 'links.json');
+const DRIVE_FOLDER_ID = process.env.DRIVE_FOLDER_ID || '';
+const DRIVE_API_KEY = process.env.DRIVE_API_KEY || '';
 
 function sendJson(res, statusCode, payload) {
   res.writeHead(statusCode, {
@@ -30,76 +30,43 @@ function sendJson(res, statusCode, payload) {
   res.end(JSON.stringify(payload));
 }
 
-function loadLinks() {
-  try {
-    if (!existsSync(LINKS_FILE)) {
-      return [];
-    }
-    return JSON.parse(readFileSync(LINKS_FILE, 'utf8'));
-  } catch {
-    return [];
+async function fetchDriveFolder() {
+  if (!DRIVE_FOLDER_ID || !DRIVE_API_KEY) {
+    return { items: [], count: 0 };
   }
-}
 
-function saveLinks(links) {
+  const url = `https://www.googleapis.com/drive/v3/files?q='${DRIVE_FOLDER_ID}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,createdTime,thumbnailLink)&orderBy=createdTime+desc&pageSize=100`;
+
   try {
-    mkdirSync(DATA_DIR, { recursive: true });
-    writeFileSync(LINKS_FILE, JSON.stringify(links, null, 2));
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error('Drive API error:', response.status);
+      return { items: [], count: 0 };
+    }
+
+    const data = await response.json();
+    const files = data.files || [];
+
+    const items = files.map((file) => ({
+      key: file.id,
+      name: file.name,
+      mimeType: file.mimeType,
+      lastModified: file.createdTime,
+      thumbnailUrl: file.thumbnailLink || `https://drive.google.com/thumbnail?id=${file.id}&sz=w400`,
+      previewUrl: `https://drive.google.com/file/d/${file.id}/preview`,
+      driveUrl: `https://drive.google.com/file/d/${file.id}/view`,
+    }));
+
+    return { items, count: files.length };
   } catch (error) {
-    console.error('Failed to save links:', error);
-    throw error;
+    console.error('Failed to fetch Drive folder:', error);
+    return { items: [], count: 0 };
   }
 }
 
-function getDrivePreviewUrl(fileId) {
-  return `https://drive.google.com/file/d/${fileId}/preview`;
-}
-
-function getDriveThumbnailUrl(fileId) {
-  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
-}
-
-async function handleSubmitLink(req, res) {
-  let body = '';
-  req.on('data', (chunk) => (body += chunk));
-  req.on('end', () => {
-    try {
-      const { url, fileId } = JSON.parse(body);
-      if (!url || !fileId) {
-        sendJson(res, 400, { error: 'Missing url or fileId' });
-        return;
-      }
-
-      const links = loadLinks();
-      const newLink = {
-        id: Date.now().toString(),
-        url,
-        fileId,
-        previewUrl: getDrivePreviewUrl(fileId),
-        thumbnailUrl: getDriveThumbnailUrl(fileId),
-        submittedAt: new Date().toISOString(),
-      };
-
-      links.unshift(newLink);
-      saveLinks(links);
-      sendJson(res, 200, { success: true });
-    } catch (error) {
-      sendJson(res, 400, { error: 'Invalid request' });
-    }
-  });
-}
-
-function handleGallery(res) {
-  const links = loadLinks();
-  const items = links.map((link) => ({
-    key: link.id,
-    size: 0,
-    lastModified: link.submittedAt,
-    mediaType: 'drive',
-    url: link.previewUrl,
-    driveUrl: link.url,
-  }));
-  sendJson(res, 200, items);
+async function handleGallery(res) {
+  const { items, count } = await fetchDriveFolder();
+  sendJson(res, 200, { items, count });
 }
 
 createServer(async (req, res) => {
@@ -113,13 +80,16 @@ createServer(async (req, res) => {
       return;
     }
 
-    if (pathname === '/submit-link' && req.method === 'POST') {
-      await handleSubmitLink(req, res);
+    if (pathname === '/gallery' && req.method === 'GET') {
+      await handleGallery(res);
       return;
     }
 
-    if (pathname === '/gallery' && req.method === 'GET') {
-      handleGallery(res);
+    if (pathname === '/folder-link' && req.method === 'GET') {
+      sendJson(res, 200, {
+        folderId: DRIVE_FOLDER_ID,
+        uploadUrl: DRIVE_FOLDER_ID ? `https://drive.google.com/drive/folders/${DRIVE_FOLDER_ID}` : null,
+      });
       return;
     }
 
