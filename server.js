@@ -3,6 +3,7 @@ import { readFileSync, existsSync, statSync } from 'fs';
 import { extname, join } from 'path';
 
 const PORT = Number(process.env.PORT || 3000);
+const PASSWORD = process.env.SITE_PASSWORD || '';
 const html = readFileSync('index.html', 'utf8');
 
 const MIME_TYPES = {
@@ -21,6 +22,13 @@ const MIME_TYPES = {
 
 const DRIVE_FOLDER_ID = process.env.DRIVE_FOLDER_ID || '';
 const DRIVE_API_KEY = process.env.DRIVE_API_KEY || '';
+
+function checkAuth(req) {
+  if (!PASSWORD) return true;
+  const cookie = req.headers.cookie || '';
+  const match = cookie.match(/auth=([^;]+)/);
+  return match && match[1] === PASSWORD;
+}
 
 function sendJson(res, statusCode, payload) {
   res.writeHead(statusCode, {
@@ -69,10 +77,45 @@ async function handleGallery(res) {
   sendJson(res, 200, { items, count });
 }
 
+const loginPage = `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>login</title>
+<style>body{font-family:system-ui;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#111;color:#fff}
+form{display:flex;flex-direction:column;gap:12px}input{padding:12px;font-size:16px;border:1px solid #333;background:#222;color:#fff;border-radius:4px}
+button{padding:12px 24px;font-size:16px;cursor:pointer;background:#fff;color:#000;border:none;border-radius:4px}</style>
+</head><body><form method="POST" action="/login"><input type="password" name="password" placeholder="password" autofocus>
+<button type="submit">enter</button></form></body></html>`;
+
 createServer(async (req, res) => {
   try {
     const reqUrl = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
     const pathname = reqUrl.pathname;
+
+    if (pathname === '/login' && req.method === 'POST') {
+      let body = '';
+      for await (const chunk of req) body += chunk;
+      const params = new URLSearchParams(body);
+      const pw = params.get('password') || '';
+      if (pw === PASSWORD) {
+        res.writeHead(302, { 'Set-Cookie': `auth=${PASSWORD}; Path=/; HttpOnly; SameSite=Strict`, Location: '/' });
+        res.end();
+      } else {
+        res.writeHead(302, { Location: '/login' });
+        res.end();
+      }
+      return;
+    }
+
+    if (PASSWORD && !checkAuth(req)) {
+      if (pathname === '/login') {
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.end(loginPage);
+        return;
+      }
+      res.writeHead(302, { Location: '/login' });
+      res.end();
+      return;
+    }
 
     if (pathname === '/' || pathname === '/index.html') {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
