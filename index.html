@@ -146,7 +146,6 @@
       align-items: start;
     }
 
-    /* Sticky sidebar for uploader */
     .layout>.panel:first-of-type {
       position: sticky;
       top: 2rem;
@@ -182,7 +181,7 @@
       gap: 0.65rem;
     }
 
-    input[type='file'] {
+    input[type='url'] {
       width: 100%;
       border: 1px solid var(--taupe);
       background: #fff;
@@ -226,22 +225,6 @@
       min-height: 1.3rem;
       color: var(--espresso);
       font-size: 0.95rem;
-    }
-
-    .progress-track {
-      margin-top: 0.75rem;
-      height: 7px;
-      border: 1px solid rgba(136, 105, 79, 0.2);
-      background: var(--sand);
-      overflow: hidden;
-      display: none;
-    }
-
-    .progress-fill {
-      width: 0;
-      height: 100%;
-      background: linear-gradient(90deg, var(--walnut), #c39d76);
-      transition: width 120ms linear;
     }
 
     .gallery-note {
@@ -292,6 +275,12 @@
       background: #111;
     }
 
+    .drive-embed {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border: none;
+    }
+
     .card-meta {
       position: absolute;
       left: 0;
@@ -311,35 +300,6 @@
 
     .gallery-preview.has-items {
       display: block;
-    }
-
-    .preview-collage {
-      position: relative;
-      height: 72px;
-      display: flex;
-      gap: 0;
-    }
-
-    .preview-thumb {
-      height: 100%;
-      flex: 1;
-      object-fit: cover;
-      border: 1px solid var(--sand);
-      margin-right: -1px;
-      filter: saturate(0.85);
-      transition: filter 0.3s ease, opacity 0.3s ease;
-    }
-
-    .preview-collage:hover .preview-thumb {
-      filter: saturate(1);
-    }
-
-    .preview-collage::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, transparent 40%, rgba(250, 248, 245, 0.6));
-      pointer-events: none;
     }
 
     .preview-link {
@@ -491,18 +451,15 @@
     <section class="layout">
       <section class="panel" aria-labelledby="upload-title">
         <h2 id="upload-title">share</h2>
-        <p class="copy">Upload your photos and videos to our collection.</p>
+        <p class="copy">Share a Google Drive link to your photos and videos.</p>
         <div class="uploader-row">
-          <input id="file-input" type="file" accept="image/*,video/*" multiple>
+          <input id="link-input" type="url" placeholder="https://drive.google.com/file/d/..." />
           <div class="actions">
-            <button id="upload-btn" type="button">Upload</button>
+            <button id="submit-btn" type="button">Submit</button>
             <button id="refresh-btn" type="button">Refresh</button>
           </div>
         </div>
         <div id="status" class="status" aria-live="polite"></div>
-        <div id="progress-track" class="progress-track" aria-hidden="true">
-          <div id="progress-fill" class="progress-fill"></div>
-        </div>
         <div id="gallery-preview" class="gallery-preview"></div>
       </section>
 
@@ -522,48 +479,26 @@
   </div>
 
   <script>
-    const fileInput = document.getElementById('file-input');
-    const uploadBtn = document.getElementById('upload-btn');
+    const linkInput = document.getElementById('link-input');
+    const submitBtn = document.getElementById('submit-btn');
     const refreshBtn = document.getElementById('refresh-btn');
     const statusEl = document.getElementById('status');
     const galleryEl = document.getElementById('gallery');
-    const progressTrack = document.getElementById('progress-track');
-    const progressFill = document.getElementById('progress-fill');
 
     function setStatus(message, isError = false) {
       statusEl.textContent = message;
       statusEl.style.color = isError ? '#8a2f2f' : '#75695c';
     }
 
-    function formatBytes(bytes) {
-      if (!Number.isFinite(bytes) || bytes < 1) return '0 B';
-      const units = ['B', 'KB', 'MB', 'GB'];
-      let value = bytes;
-      let idx = 0;
-      while (value >= 1024 && idx < units.length - 1) {
-        value /= 1024;
-        idx += 1;
-      }
-      return `${value.toFixed(value >= 100 || idx === 0 ? 0 : 1)} ${units[idx]}`;
-    }
-
     function mediaNodeFor(item) {
-      if (item.mediaType === 'image') {
-        const img = document.createElement('img');
-        img.src = item.url;
-        img.alt = 'wedding memory';
-        img.loading = 'lazy';
-        img.className = 'card-media';
-        return img;
+      if (item.mediaType === 'drive') {
+        const iframe = document.createElement('iframe');
+        iframe.src = item.url;
+        iframe.className = 'drive-embed';
+        iframe.allow = 'autoplay';
+        return iframe;
       }
-
-      const video = document.createElement('video');
-      video.src = item.url;
-      video.controls = true;
-      video.preload = 'metadata';
-      video.playsInline = true;
-      video.className = 'card-media';
-      return video;
+      return null;
     }
 
     async function loadGallery() {
@@ -585,16 +520,18 @@
           card.className = 'card';
 
           const media = mediaNodeFor(item);
+          if (media) {
+            const meta = document.createElement('div');
+            meta.className = 'card-meta';
+            meta.textContent = new Date(item.lastModified || Date.now()).toLocaleDateString();
 
-          const meta = document.createElement('div');
-          meta.className = 'card-meta';
-          const kind = item.mediaType === 'image' ? 'photo' : 'video';
-          meta.textContent = `${kind} · ${formatBytes(item.size)} · ${new Date(item.lastModified || Date.now()).toLocaleDateString()}`;
+            card.append(media, meta);
+            galleryEl.append(card);
 
-          card.append(media, meta);
-          galleryEl.append(card);
-
-          card.addEventListener('click', () => openLightbox(item));
+            card.addEventListener('click', () => {
+              window.open(item.driveUrl, '_blank');
+            });
+          }
         }
         updatePreview(items);
       } catch (error) {
@@ -604,25 +541,12 @@
 
     function updatePreview(items) {
       const preview = document.getElementById('gallery-preview');
-      const thumbItems = items.filter(i => i.mediaType === 'image').slice(0, 4);
-      if (thumbItems.length === 0) {
+      if (items.length === 0) {
         preview.classList.remove('has-items');
         return;
       }
 
       preview.innerHTML = '';
-      const collage = document.createElement('div');
-      collage.className = 'preview-collage';
-      for (const item of thumbItems) {
-        const thumb = document.createElement('img');
-        thumb.src = item.url;
-        thumb.className = 'preview-thumb';
-        thumb.alt = '';
-        thumb.loading = 'lazy';
-        collage.appendChild(thumb);
-      }
-      preview.appendChild(collage);
-
       const link = document.createElement('a');
       link.href = '#gallery-title';
       link.className = 'preview-link';
@@ -631,39 +555,16 @@
       preview.classList.add('has-items');
     }
 
-    // Lightbox Logic
     const lightbox = document.getElementById('lightbox');
     const lightboxContainer = document.getElementById('lightbox-container');
     const lightboxClose = document.getElementById('lightbox-close');
-
-    function openLightbox(item) {
-      lightboxContainer.innerHTML = '';
-      let media;
-
-      if (item.mediaType === 'image') {
-        media = document.createElement('img');
-        media.src = item.url;
-        media.className = 'lightbox-media';
-      } else {
-        media = document.createElement('video');
-        media.src = item.url;
-        media.controls = true;
-        media.autoplay = true;
-        media.className = 'lightbox-media';
-      }
-
-      lightboxContainer.appendChild(media);
-      lightbox.classList.add('active');
-      lightbox.setAttribute('aria-hidden', 'false');
-      document.body.style.overflow = 'hidden';
-    }
 
     function closeLightbox() {
       lightbox.classList.remove('active');
       lightbox.setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';
       setTimeout(() => {
-        lightboxContainer.innerHTML = ''; // Cleanup video
+        lightboxContainer.innerHTML = '';
       }, 300);
     }
 
@@ -675,90 +576,58 @@
       if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox();
     });
 
-    function uploadWithProgress(url, file) {
-      return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('PUT', url);
-        xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
-
-        xhr.upload.onprogress = (event) => {
-          if (!event.lengthComputable) return;
-          const pct = Math.max(0, Math.min(100, (event.loaded / event.total) * 100));
-          progressFill.style.width = `${pct}%`;
-        };
-
-        xhr.onload = () => {
-          if (xhr.status >= 200 && xhr.status < 300) resolve();
-          else reject(new Error(`Upload failed (${xhr.status})`));
-        };
-
-        xhr.onerror = () => reject(new Error('Network error during upload'));
-        xhr.send(file);
-      });
-    }
-
-    async function uploadOneFile(file, index, total) {
-      const label = total > 1 ? `(${index + 1}/${total}) ` : '';
-      setStatus(`${label}Preparing ${file.name}...`);
-
-      const query = new URLSearchParams({
-        filename: file.name,
-        type: file.type || 'application/octet-stream',
-        size: String(file.size),
-      });
-
-      const presignRes = await fetch(`/presign?${query.toString()}`, { cache: 'no-store' });
-      if (!presignRes.ok) {
-        const err = await presignRes.json().catch(() => ({}));
-        throw new Error(err.error || `Could not prepare upload for ${file.name}`);
+    function extractDriveFileId(url) {
+      const patterns = [
+        /\/file\/d\/([a-zA-Z0-9_-]+)/,
+        /id=([a-zA-Z0-9_-]+)/,
+        /\/open\?id=([a-zA-Z0-9_-]+)/
+      ];
+      for (const pattern of patterns) {
+        const match = url.match(pattern);
+        if (match) return match[1];
       }
-
-      const { url } = await presignRes.json();
-      setStatus(`${label}Uploading ${file.name}...`);
-      await uploadWithProgress(url, file);
+      return null;
     }
 
-    async function handleUpload() {
-      const files = Array.from(fileInput.files || []);
-      if (files.length === 0) {
-        setStatus('Pick a file first.', true);
+    async function handleSubmit() {
+      const url = linkInput.value.trim();
+      if (!url) {
+        setStatus('Enter a Google Drive link.', true);
         return;
       }
 
-      uploadBtn.disabled = true;
-      progressTrack.style.display = 'block';
-      progressFill.style.width = '0%';
+      const fileId = extractDriveFileId(url);
+      if (!fileId) {
+        setStatus('Invalid Google Drive link.', true);
+        return;
+      }
 
-      let uploaded = 0;
-      let failed = 0;
+      submitBtn.disabled = true;
+      setStatus('Submitting...');
 
-      for (let i = 0; i < files.length; i++) {
-        try {
-          await uploadOneFile(files[i], i, files.length);
-          uploaded++;
-        } catch (error) {
-          failed++;
-          setStatus(`Failed: ${files[i].name} — ${error.message}`, true);
+      try {
+        const res = await fetch('/submit-link', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url, fileId })
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || 'Failed to submit link');
         }
-        progressFill.style.width = `${((i + 1) / files.length) * 100}%`;
-      }
 
-      fileInput.value = '';
-      if (failed === 0) {
-        setStatus(`${uploaded} ${uploaded === 1 ? 'file' : 'files'} uploaded.`);
-      } else {
-        setStatus(`${uploaded} uploaded, ${failed} failed.`, true);
+        setStatus('Link submitted!');
+        linkInput.value = '';
+        await loadGallery();
+      } catch (error) {
+        setStatus(error.message, true);
+      } finally {
+        submitBtn.disabled = false;
       }
-
-      await loadGallery();
-      uploadBtn.disabled = false;
-      setTimeout(() => {
-        progressTrack.style.display = 'none';
-        progressFill.style.width = '0%';
-      }, 900);
     }
 
-    uploadBtn.addEventListener('click', handleUpload);
+    submitBtn.addEventListener('click', handleSubmit);
     refreshBtn.addEventListener('click', loadGallery);
     loadGallery();
   </script>
