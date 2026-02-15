@@ -61,8 +61,7 @@ async function fetchDriveFolder() {
       mimeType: file.mimeType,
       lastModified: file.createdTime,
       thumbnailUrl: file.thumbnailLink || `https://drive.google.com/thumbnail?id=${file.id}&sz=w400`,
-      previewUrl: `https://drive.google.com/file/d/${file.id}/preview`,
-      driveUrl: `https://drive.google.com/file/d/${file.id}/view`,
+      openUrl: `https://drive.google.com/open?id=${file.id}`,
     }));
 
     return { items, count: files.length };
