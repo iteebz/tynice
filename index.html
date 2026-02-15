@@ -512,19 +512,12 @@
     }
 
     function mediaNodeFor(item) {
-      if (item.mimeType && item.mimeType.startsWith('image/')) {
-        const img = document.createElement('img');
-        img.src = item.thumbnailUrl;
-        img.className = 'card-media';
-        img.alt = item.name || 'Uploaded image';
-        img.loading = 'lazy';
-        return img;
-      }
-      const iframe = document.createElement('iframe');
-      iframe.src = item.previewUrl;
-      iframe.className = 'drive-embed';
-      iframe.allow = 'autoplay';
-      return iframe;
+      const img = document.createElement('img');
+      img.src = item.thumbnailUrl;
+      img.className = 'card-media';
+      img.alt = item.name || 'Uploaded media';
+      img.loading = 'lazy';
+      return img;
     }
 
     async function loadGallery() {
@@ -555,7 +548,7 @@
           galleryEl.append(card);
 
           card.addEventListener('click', () => {
-            window.open(item.driveUrl, '_blank');
+            window.open(item.openUrl, '_blank');
           });
         }
         updatePreview(items);
