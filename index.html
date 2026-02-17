@@ -561,7 +561,9 @@
     </div>
   </div>
 
-  <script>
+  <script type="module">
+    import { dbFetch } from '/db.js';
+
     const uploadLink = document.getElementById('upload-link');
     const refreshBtn = document.getElementById('refresh-btn');
     const galleryEl = document.getElementById('gallery');
@@ -665,22 +667,6 @@
     loadFolderLink();
     loadGallery();
 
-    const SUPABASE_URL = 'https://ngrmxehoudbgrjsvdxbv.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ncm14ZWhvdWRiZ3Jqc3ZkeGJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzNTQ2MzYsImV4cCI6MjA4NjkzMDYzNn0.cLbx6BNRWi04Nuu2c97ut4A2vfyEPy6fEUq_5k734D0';
-
-    async function sbFetch(path, opts = {}) {
-      return fetch(`${SUPABASE_URL}/rest/v1${path}`, {
-        ...opts,
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-          'Prefer': opts.prefer || '',
-          ...opts.headers,
-        },
-      });
-    }
-
     function renderNote(note) {
       const card = document.createElement('div');
       card.className = 'note-card';
@@ -699,7 +685,7 @@
     async function loadNotes() {
       const feed = document.getElementById('notes-feed');
       try {
-        const res = await sbFetch('/notes?order=created_at.desc&limit=50');
+        const res = await dbFetch('/notes?order=created_at.desc&limit=50');
         const notes = await res.json();
         feed.innerHTML = '';
         if (!notes.length) {
@@ -723,7 +709,7 @@
       noteSubmit.disabled = true;
       noteSubmit.textContent = 'Sending...';
       try {
-        const res = await sbFetch('/notes', {
+        const res = await dbFetch('/notes', {
           method: 'POST',
           prefer: 'return=representation',
           body: JSON.stringify({ name, message }),
