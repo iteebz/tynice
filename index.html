@@ -425,6 +425,62 @@
       line-height: 1;
     }
 
+    .notes-section {
+      margin-top: 2rem;
+    }
+
+    .notes-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .notes-form input,
+    .notes-form textarea {
+      width: 100%;
+      border: 1px solid var(--taupe);
+      background: #fff;
+      padding: 0.6rem;
+      color: var(--ink);
+      font-family: 'Crimson Pro', serif;
+      font-size: 1rem;
+      resize: vertical;
+    }
+
+    .notes-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .note-card {
+      border: 1px solid var(--sand);
+      background: rgba(255,255,255,0.6);
+      padding: 0.85rem 1rem;
+      animation: enter 400ms ease-out both;
+    }
+
+    .note-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--espresso);
+      margin-bottom: 0.2rem;
+    }
+
+    .note-message {
+      font-size: 0.95rem;
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    .note-date {
+      font-size: 0.75rem;
+      color: var(--taupe);
+      margin-top: 0.3rem;
+    }
+
     @media (max-width: 900px) {
       .layout>.panel:first-of-type {
         position: static;
@@ -484,6 +540,17 @@
         <p id="memory-count" class="gallery-note"></p>
         <div id="gallery" class="gallery-feed"></div>
       </section>
+    </section>
+
+    <section class="panel notes-section" aria-labelledby="notes-title">
+      <h2 id="notes-title">leave a note</h2>
+      <p class="copy">Share a memory or a wish for the happy couple.</p>
+      <form id="notes-form" class="notes-form">
+        <input type="text" id="note-name" placeholder="Your name" maxlength="80" required>
+        <textarea id="note-message" placeholder="Your message..." rows="3" maxlength="500" required></textarea>
+        <button type="submit" id="note-submit">Send</button>
+      </form>
+      <div id="notes-feed" class="notes-feed"></div>
     </section>
   </main>
 
@@ -597,6 +664,82 @@
     refreshBtn.addEventListener('click', loadGallery);
     loadFolderLink();
     loadGallery();
+
+    const SUPABASE_URL = 'https://ngrmxehoudbgrjsvdxbv.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ncm14ZWhvdWRiZ3Jqc3ZkeGJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzNTQ2MzYsImV4cCI6MjA4NjkzMDYzNn0.cLbx6BNRWi04Nuu2c97ut4A2vfyEPy6fEUq_5k734D0';
+
+    async function sbFetch(path, opts = {}) {
+      return fetch(`${SUPABASE_URL}/rest/v1${path}`, {
+        ...opts,
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': opts.prefer || '',
+          ...opts.headers,
+        },
+      });
+    }
+
+    function renderNote(note) {
+      const card = document.createElement('div');
+      card.className = 'note-card';
+      card.innerHTML = `
+        <div class="note-name">${escapeHtml(note.name)}</div>
+        <div class="note-message">${escapeHtml(note.message)}</div>
+        <div class="note-date">${new Date(note.created_at).toLocaleDateString()}</div>
+      `;
+      return card;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    async function loadNotes() {
+      const feed = document.getElementById('notes-feed');
+      try {
+        const res = await sbFetch('/notes?order=created_at.desc&limit=50');
+        const notes = await res.json();
+        feed.innerHTML = '';
+        if (!notes.length) {
+          feed.innerHTML = '<div class="empty">be the first to leave a note</div>';
+          return;
+        }
+        for (const note of notes) feed.appendChild(renderNote(note));
+      } catch {
+        feed.innerHTML = '<div class="empty">notes unavailable</div>';
+      }
+    }
+
+    const notesForm = document.getElementById('notes-form');
+    const noteSubmit = document.getElementById('note-submit');
+
+    notesForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('note-name').value.trim();
+      const message = document.getElementById('note-message').value.trim();
+      if (!name || !message) return;
+      noteSubmit.disabled = true;
+      noteSubmit.textContent = 'Sending...';
+      try {
+        const res = await sbFetch('/notes', {
+          method: 'POST',
+          prefer: 'return=representation',
+          body: JSON.stringify({ name, message }),
+        });
+        if (!res.ok) throw new Error();
+        notesForm.reset();
+        await loadNotes();
+      } catch {
+        noteSubmit.textContent = 'Try again';
+      } finally {
+        noteSubmit.disabled = false;
+        if (noteSubmit.textContent === 'Sending...') noteSubmit.textContent = 'Send';
+      }
+    });
+
+    loadNotes();
   </script>
 </body>
 
