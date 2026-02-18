@@ -76,90 +76,13 @@ async function handleGallery(res) {
   sendJson(res, 200, { items, count });
 }
 
-const loginCss = `
-* {
-  box-sizing: border-box;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  margin: 0;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
-  color: #fff;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 48px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  backdrop-filter: blur(20px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-}
-
-input {
-  padding: 14px 18px;
-  font-size: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(0, 0, 0, 0.3);
-  color: #fff;
-  border-radius: 8px;
-  outline: none;
-  transition: all 0.2s ease;
-  width: 220px;
-  letter-spacing: 2px;
-  text-align: center;
-}
-
-input:focus {
-  border-color: rgba(255, 255, 255, 0.3);
-  background: rgba(0, 0, 0, 0.4);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
-}
-
-input::placeholder {
-  color: rgba(255, 255, 255, 0.3);
-  letter-spacing: 1px;
-}
-
-button {
-  padding: 14px 28px;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  cursor: pointer;
-  background: linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
-  color: #111;
-  border: none;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-}
-
-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
-}
-
-button:active {
-  transform: translateY(0);
-}
-`;
-
 const loginPage = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>tynice</title>
-  <style>${loginCss}</style>
+  <link rel="stylesheet" href="/login.css">
 </head>
 <body>
   <form method="POST" action="/login">
