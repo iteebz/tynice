@@ -1,10 +1,12 @@
 import { createServer } from 'http';
 import { readFileSync, existsSync, statSync } from 'fs';
 import { extname, join } from 'path';
+import * as r2 from './lib/r2.js';
 
 const PORT = Number(process.env.PORT || 3000);
 const PASSWORD = process.env.SITE_PASSWORD || '';
 const html = readFileSync('index.html', 'utf8');
+const loginPage = existsSync('public/login.html') ? readFileSync('public/login.html', 'utf8') : 'Login pending...';
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -19,9 +21,6 @@ const MIME_TYPES = {
   '.svg': 'image/svg+xml',
   '.json': 'application/json; charset=utf-8',
 };
-
-const DRIVE_FOLDER_ID = process.env.DRIVE_FOLDER_ID || '';
-const DRIVE_API_KEY = process.env.DRIVE_API_KEY || '';
 
 function checkAuth(req) {
   if (!PASSWORD) return true;
@@ -38,75 +37,21 @@ function sendJson(res, statusCode, payload) {
   res.end(JSON.stringify(payload));
 }
 
-async function fetchDriveFolder() {
-  if (!DRIVE_FOLDER_ID || !DRIVE_API_KEY) {
-    return { items: [], count: 0 };
-  }
-
-  const url = `https://www.googleapis.com/drive/v3/files?q='${DRIVE_FOLDER_ID}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,createdTime,thumbnailLink)&orderBy=createdTime+desc&pageSize=100`;
-
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      console.error('Drive API error:', response.status);
-      return { items: [], count: 0 };
-    }
-
-    const data = await response.json();
-    const files = data.files || [];
-
-    const items = files.map((file) => ({
-      key: file.id,
-      name: file.name,
-      mimeType: file.mimeType,
-      lastModified: file.createdTime,
-      thumbnailUrl: file.thumbnailLink || `https://drive.google.com/thumbnail?id=${file.id}&sz=w400`,
-      openUrl: `https://drive.google.com/open?id=${file.id}`,
-    }));
-
-    return { items, count: files.length };
-  } catch (error) {
-    console.error('Failed to fetch Drive folder:', error);
-    return { items: [], count: 0 };
-  }
-}
-
-async function handleGallery(res) {
-  const { items, count } = await fetchDriveFolder();
-  sendJson(res, 200, { items, count });
-}
-
-const loginPage = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>tynice</title>
-  <link rel="stylesheet" href="/login.css">
-</head>
-<body>
-  <form method="POST" action="/login">
-    <input type="password" name="password" placeholder="• • • • •" autofocus>
-    <button type="submit">enter</button>
-  </form>
-</body>
-</html>`;
-
 createServer(async (req, res) => {
   try {
     const reqUrl = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
     const pathname = reqUrl.pathname;
 
+    // 1. Auth Handlers
     if (pathname === '/login' && req.method === 'POST') {
       let body = '';
       for await (const chunk of req) body += chunk;
       const params = new URLSearchParams(body);
-      const pw = params.get('password') || '';
-      if (pw === PASSWORD) {
+      if (params.get('password') === PASSWORD) {
         res.writeHead(302, { 'Set-Cookie': `auth=${PASSWORD}; Path=/; HttpOnly; SameSite=Strict`, Location: '/' });
         res.end();
       } else {
-        res.writeHead(302, { Location: '/login' });
+        res.writeHead(302, { Location: '/login?error=1' });
         res.end();
       }
       return;
@@ -123,25 +68,41 @@ createServer(async (req, res) => {
       return;
     }
 
-    if (pathname === '/' || pathname === '/index.html') {
+    // 2. Page Handlers
+    if (pathname === '/' || pathname === '/index.html' || pathname === '/upload') {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(html);
       return;
     }
 
+    // 3. API Handlers
     if (pathname === '/gallery' && req.method === 'GET') {
-      await handleGallery(res);
+      const data = await r2.fetchGallery();
+      sendJson(res, 200, data);
+      return;
+    }
+
+    if (pathname === '/presign' && req.method === 'GET') {
+      const filename = reqUrl.searchParams.get('filename');
+      const type = reqUrl.searchParams.get('type') || 'video/mp4';
+      if (!filename) return sendJson(res, 400, { error: 'filename required' });
+      const data = await r2.generatePresignedUrl(filename, type);
+      sendJson(res, 200, data);
       return;
     }
 
     if (pathname === '/folder-link' && req.method === 'GET') {
-      sendJson(res, 200, {
-        folderId: DRIVE_FOLDER_ID,
-        uploadUrl: DRIVE_FOLDER_ID ? `https://drive.google.com/drive/folders/${DRIVE_FOLDER_ID}` : null,
-      });
+      sendJson(res, 200, { uploadUrl: r2.getPublicUrl() });
       return;
     }
 
+    if (pathname === '/stats' && req.method === 'GET') {
+      const { count } = await r2.fetchGallery();
+      sendJson(res, 200, { count });
+      return;
+    }
+
+    // 4. Static Files
     const filePath = join('public', pathname);
     if (existsSync(filePath) && statSync(filePath).isFile()) {
       const ext = extname(filePath);
@@ -155,6 +116,7 @@ createServer(async (req, res) => {
     res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
     res.end('Not found');
   } catch (error) {
+    console.error('Server error:', error);
     sendJson(res, 500, {
       error: 'Server error',
       details: error instanceof Error ? error.message : 'Unknown error',

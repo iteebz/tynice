@@ -11,6 +11,8 @@ export default [
         process: 'readonly',
         crypto: 'readonly',
         URL: 'readonly',
+        URLSearchParams: 'readonly',
+        fetch: 'readonly',
       },
     },
     rules: {
