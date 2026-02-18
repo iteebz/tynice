@@ -2,7 +2,7 @@
 
 ## Overview
 
-Wedding video collection site. Guests upload videos → stored in R2 → displayed in feed.
+Wedding media collection site. Guests upload photos/videos → stored in Cloudflare R2 → displayed in gallery with lightbox.
 
 ## Stack
 
@@ -12,7 +12,6 @@ Wedding video collection site. Guests upload videos → stored in R2 → display
 │  ┌───────────────────────────────────┐  │
 │  │  Node.js Server (server.js)       │  │
 │  │  - Presigned URL generation       │  │
-│  │  - Stats tracking                 │  │
 │  │  - Gallery API                    │  │
 │  └───────────────────────────────────┘  │
 └─────────────────────────────────────────┘
@@ -20,9 +19,16 @@ Wedding video collection site. Guests upload videos → stored in R2 → display
                     ▼
 ┌─────────────────────────────────────────┐
 │  Cloudflare R2                          │
-│  - Video/image storage                  │
+│  - Photo/video storage                  │
 │  - Presigned uploads (direct to R2)     │
-│  - Optional public URL for playback     │
+│  - Public URL for playback              │
+└─────────────────────────────────────────┘
+                    │
+                    ▼
+┌─────────────────────────────────────────┐
+│  Supabase                               │
+│  - Guest notes (name, message)          │
+│  - Author token for self-delete         │
 └─────────────────────────────────────────┘
 ```
 
@@ -30,22 +36,22 @@ Wedding video collection site. Guests upload videos → stored in R2 → display
 
 | Path | Method | Description |
 |------|--------|-------------|
-| `/` | GET | Upload page with gallery feed |
-| `/upload` | GET | Alias for `/` |
-| `/love` | GET | Thank you page with stats |
+| `/` | GET | Upload + gallery page |
+| `/login` | GET/POST | Password auth |
 | `/presign` | GET | Generate presigned upload URL |
-| `/stats` | GET | Upload statistics |
-| `/gallery` | GET | List uploaded videos |
-| `/sync-stats` | POST | Resync stats from R2 |
+| `/gallery` | GET | List uploaded media |
+| `/stats` | GET | Upload count |
+| `/folder-link` | GET | R2 public URL |
 
 ## Data Flow
 
 ```
-1. Guest selects video
-2. Frontend requests /presign with filename, type, size
-3. Server generates presigned S3 URL, increments stats
-4. Frontend uploads directly to R2 via presigned URL
-5. Gallery fetches /gallery → lists R2 objects → signed URLs
+1. Guest selects files (drag/drop or tap)
+2. Frontend requests /presign per file
+3. Server generates presigned S3 PUT URL
+4. Frontend uploads directly to R2 via XHR (with progress)
+5. Gallery fetches /gallery → lists R2 objects → public URLs
+6. Card click opens lightbox (image) or plays video inline
 ```
 
 ## Environment Variables
@@ -56,21 +62,26 @@ Wedding video collection site. Guests upload videos → stored in R2 → display
 | `R2_ACCESS_KEY_ID` | R2 API access key |
 | `R2_SECRET_ACCESS_KEY` | R2 API secret |
 | `R2_BUCKET` | Bucket name |
-| `R2_PUBLIC_URL` | Optional: public bucket URL for faster playback |
+| `R2_PUBLIC_URL` | Public bucket URL for playback |
+| `SITE_PASSWORD` | Optional: gate site behind password |
+| `SUPABASE_URL` | Supabase project URL |
+| `SUPABASE_ANON_KEY` | Supabase anon key |
 
 ## Files
 
 ```
-tynice.com/
-├── index.html      # Upload + gallery feed
-├── love.html       # Thank you page
-├── server.js       # Node.js server
-├── package.json    # Dependencies
-├── Dockerfile      # Container build
-├── fly.toml        # Fly.io config
-└── justfile        # Dev commands
+tynice/
+├── index.html          # Upload + gallery + notes
+├── server.js           # Node.js server
+├── lib/r2.js           # R2 client (list, presign)
+├── public/
+│   ├── login.html      # Password gate page
+│   ├── login.css       # Login styles
+│   └── db.js           # Supabase client
+├── supabase/
+│   └── migrations/     # DB schema
+├── package.json
+├── Dockerfile
+├── fly.toml
+└── justfile
 ```
-
-## Persistence
-
-Stats stored in `/data/stats.json` on Fly volume. Videos stored in R2.

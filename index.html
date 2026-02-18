@@ -178,73 +178,70 @@
     .uploader-row {
       display: flex;
       flex-direction: column;
-      gap: 0.65rem;
+      gap: 1rem;
     }
 
-    input[type='url'] {
-      width: 100%;
-      border: 1px solid var(--taupe);
-      background: #fff;
-      padding: 0.6rem;
-      color: var(--ink);
-      font-family: 'Crimson Pro', serif;
-      font-size: 1rem;
+    .upload-container {
+      position: relative;
+      border: 2px dashed var(--taupe);
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.4);
     }
 
-    .actions {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
+    .upload-container:hover, .upload-container.drag-over {
+      border-color: var(--walnut);
+      background: rgba(255, 255, 255, 0.8);
     }
 
-    button {
-      border: 1px solid var(--walnut);
-      background: linear-gradient(180deg, #9a7554, #7f6147);
-      color: #fff;
-      padding: 0.62rem 1rem;
-      font-family: 'Crimson Pro', serif;
-      font-size: 1rem;
-      font-weight: 400;
-      letter-spacing: 0.02em;
+    .upload-container input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
       cursor: pointer;
-      transition: transform 120ms ease, filter 180ms ease;
     }
 
-    button:hover:enabled {
-      filter: brightness(1.04);
-      transform: translateY(-1px);
-    }
-
-    button:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
-
-    .upload-btn {
-      display: inline-block;
-      border: 1px solid var(--walnut);
-      background: linear-gradient(180deg, #9a7554, #7f6147);
-      color: #fff;
-      padding: 0.62rem 1rem;
-      font-family: 'Crimson Pro', serif;
+    .upload-prompt {
+      color: var(--espresso);
       font-size: 1rem;
-      font-weight: 400;
-      letter-spacing: 0.02em;
-      text-decoration: none;
-      cursor: pointer;
-      transition: transform 120ms ease, filter 180ms ease;
     }
 
-    .upload-btn:hover {
-      filter: brightness(1.04);
-      transform: translateY(-1px);
+    .progress-container {
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: var(--sand);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: var(--walnut);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      font-size: 0.8rem;
+      color: var(--walnut);
+      margin-top: 0.5rem;
+      text-transform: lowercase;
     }
 
     .status {
-      margin-top: 0.65rem;
+      margin-top: 1rem;
       min-height: 1.3rem;
       color: var(--espresso);
       font-size: 0.95rem;
+      text-align: center;
     }
 
     .gallery-note {
@@ -544,10 +541,21 @@
     <section class="layout">
       <section class="panel" aria-labelledby="upload-title">
         <h2 id="upload-title">share</h2>
-        <p class="copy">Upload your photos and videos — we're crowdsourcing footage.</p>
+        <p class="copy">Choose photos and videos to upload directly to our gallery.</p>
         <div class="uploader-row">
-          <a id="upload-link" href="#" target="_blank" class="upload-btn">Open Shared Folder</a>
-          <button id="refresh-btn" type="button">Refresh</button>
+          <div class="upload-container" id="drop-zone">
+            <input type="file" id="file-input" accept="video/*,image/*" multiple>
+            <div class="upload-prompt" id="upload-prompt">Tap or drag to select memories</div>
+          </div>
+          
+          <div class="progress-container" id="progress-container">
+            <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+            <div class="progress-text" id="progress-text">uploading...</div>
+          </div>
+
+          <div id="status" class="status"></div>
+          
+          <button id="refresh-btn" type="button">Refresh Gallery</button>
         </div>
         <div id="gallery-preview" class="gallery-preview"></div>
       </section>
@@ -581,23 +589,108 @@
   <script type="module">
     import { dbFetch } from '/db.js';
 
-    const uploadLink = document.getElementById('upload-link');
+    const fileInput = document.getElementById('file-input');
+    const dropZone = document.getElementById('drop-zone');
+    const statusEl = document.getElementById('status');
+    const progressContainer = document.getElementById('progress-container');
+    const progressFill = document.getElementById('progress-fill');
+    const progressText = document.getElementById('progress-text');
     const refreshBtn = document.getElementById('refresh-btn');
     const galleryEl = document.getElementById('gallery');
 
-    async function loadFolderLink() {
-      try {
-        const res = await fetch('/folder-link');
-        const data = await res.json();
-        if (data.uploadUrl) {
-          uploadLink.href = data.uploadUrl;
-        } else {
-          uploadLink.style.display = 'none';
+    fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(name => {
+      dropZone.addEventListener(name, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+    });
+
+    ['dragenter', 'dragover'].forEach(name => {
+      dropZone.addEventListener(name, () => dropZone.classList.add('drag-over'));
+    });
+
+    ['dragleave', 'drop'].forEach(name => {
+      dropZone.addEventListener(name, () => dropZone.classList.remove('drag-over'));
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      handleFiles(e.dataTransfer.files);
+    });
+
+    async function handleFiles(files) {
+      if (!files.length) return;
+      
+      statusEl.textContent = '';
+      progressContainer.style.display = 'block';
+      
+      for (const file of files) {
+        try {
+          progressText.textContent = `preparing ${file.name}...`;
+          progressFill.style.width = '0%';
+          
+          // 1. Get presigned URL
+          const res = await fetch(`/presign?filename=${encodeURIComponent(file.name)}&type=${encodeURIComponent(file.type)}`);
+          if (!res.ok) throw new Error('Failed to get upload link');
+          const { url } = await res.json();
+          
+          // 2. Upload to R2
+          await uploadToR2(file, url);
+          
+          statusEl.textContent = `Uploaded ${file.name} successfully.`;
+        } catch (err) {
+          console.error(err);
+          statusEl.textContent = `Failed to upload ${file.name}.`;
         }
-      } catch {}
+      }
+      
+      progressContainer.style.display = 'none';
+      await loadGallery();
+    }
+
+    function uploadToR2(file, url) {
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', url);
+        xhr.setRequestHeader('Content-Type', file.type);
+        
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) {
+            const percent = (e.loaded / e.total) * 100;
+            progressFill.style.width = `${percent}%`;
+            progressText.textContent = `uploading ${file.name}: ${Math.round(percent)}%`;
+          }
+        };
+        
+        xhr.onload = () => (xhr.status === 200 ? resolve() : reject());
+        xhr.onerror = () => reject();
+        xhr.send(file);
+      });
     }
 
     function mediaNodeFor(item) {
+      const isVideo = item.name.match(/\.(mp4|webm|mov)$/i);
+      
+      if (isVideo) {
+        const video = document.createElement('video');
+        video.src = item.thumbnailUrl;
+        video.className = 'card-media';
+        video.muted = true;
+        video.loop = true;
+        video.playsInline = true;
+        video.preload = 'metadata';
+        
+        // Auto-play on hover
+        video.addEventListener('mouseenter', () => video.play());
+        video.addEventListener('mouseleave', () => {
+          video.pause();
+          video.currentTime = 0;
+        });
+        
+        return video;
+      }
+      
       const img = document.createElement('img');
       img.src = item.thumbnailUrl;
       img.className = 'card-media';
@@ -633,9 +726,7 @@
           card.append(media, meta);
           galleryEl.append(card);
 
-          card.addEventListener('click', () => {
-            window.open(item.openUrl, '_blank');
-          });
+          card.addEventListener('click', () => openLightbox(item));
         }
         updatePreview(items);
       } catch (error) {
@@ -663,6 +754,28 @@
     const lightboxContainer = document.getElementById('lightbox-container');
     const lightboxClose = document.getElementById('lightbox-close');
 
+    function openLightbox(item) {
+      lightboxContainer.innerHTML = '';
+      const isVideo = item.name.match(/\.(mp4|webm|mov)$/i);
+      let el;
+      if (isVideo) {
+        el = document.createElement('video');
+        el.src = item.openUrl;
+        el.controls = true;
+        el.autoplay = true;
+        el.playsInline = true;
+      } else {
+        el = document.createElement('img');
+        el.src = item.openUrl;
+        el.alt = item.name || 'media';
+      }
+      el.className = 'lightbox-media';
+      lightboxContainer.appendChild(el);
+      lightbox.classList.add('active');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
     function closeLightbox() {
       lightbox.classList.remove('active');
       lightbox.setAttribute('aria-hidden', 'true');
@@ -681,7 +794,6 @@
     });
 
     refreshBtn.addEventListener('click', loadGallery);
-    loadFolderLink();
     loadGallery();
 
     function renderNote(note) {

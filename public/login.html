@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>tynice</title>
+    <style>
+        body {
+            background: #faf9f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Crimson Pro', serif;
+            color: #2c2416;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 300px;
+            padding: 1rem;
+        }
+
+        .logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3rem;
+            font-style: italic;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            color: #5a4a3a;
+        }
+
+        input {
+            padding: 1rem;
+            border: none;
+            border-bottom: 1px solid #c9bea8;
+            background: transparent;
+            text-align: center;
+            font-size: 1.2rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: #8b7355;
+        }
+
+        button {
+            padding: 0.8rem;
+            background: #8b7355;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            text-transform: lowercase;
+            letter-spacing: 0.15em;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #5a4a3a;
+        }
+    </style>
+</head>
+
+<body>
+    <form method="POST" action="/login">
+        <div class="logo">tynice</div>
+        <input type="password" name="password" placeholder="passcode" autofocus>
+        <button type="submit">enter</button>
+    </form>
+</body>
+
+</html>
