@@ -255,6 +255,10 @@
       column-gap: 1rem;
     }
 
+    .gallery-feed:has(.empty) {
+      column-count: 1;
+    }
+
     @media (max-width: 1100px) {
       .gallery-feed {
         column-count: 2;
@@ -346,12 +350,39 @@
       transform: translateX(2px);
     }
 
+    button {
+      width: 100%;
+      padding: 0.6rem 1rem;
+      font-family: 'Crimson Pro', serif;
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      text-transform: lowercase;
+      color: var(--espresso);
+      background: transparent;
+      border: 1px solid var(--taupe);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    button:hover {
+      border-color: var(--walnut);
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--walnut);
+    }
+
     .empty {
       border: 1px dashed var(--taupe);
       background: var(--cream);
       padding: 1.5rem;
       text-align: center;
       color: var(--espresso);
+      column-span: all;
     }
 
     @keyframes enter {
@@ -621,33 +652,40 @@
 
     async function handleFiles(files) {
       if (!files.length) return;
-      
+
+      let wakeLock = null;
+      try { wakeLock = await navigator.wakeLock?.request('screen'); } catch {}
+
       statusEl.textContent = '';
       progressContainer.style.display = 'block';
-      
+
+      const total = files.length;
+      let done = 0;
+
       for (const file of files) {
         try {
-          progressText.textContent = `preparing ${file.name}...`;
           progressFill.style.width = '0%';
-          
-          // 1. Get presigned URL
+          progressText.textContent = total > 1
+            ? `uploading ${done + 1} of ${total}…`
+            : 'uploading…';
+
           const res = await fetch(`/presign?filename=${encodeURIComponent(file.name)}&type=${encodeURIComponent(file.type)}&size=${file.size}`);
           if (!res.ok) {
             const { error } = await res.json().catch(() => ({}));
             throw new Error(error || 'Failed to get upload link');
           }
           const { url } = await res.json();
-          
-          // 2. Upload to R2
+
           await uploadToR2(file, url);
-          
-          statusEl.textContent = `Uploaded ${file.name} successfully.`;
+          done++;
+          statusEl.textContent = total > 1 ? `${done} of ${total} uploaded` : 'uploaded';
         } catch (err) {
           console.error(err);
-          statusEl.textContent = `Failed to upload ${file.name}.`;
+          statusEl.textContent = `failed — keep screen on and try again`;
         }
       }
-      
+
+      wakeLock?.release();
       progressContainer.style.display = 'none';
       fileInput.value = '';
       await loadGallery();
@@ -663,7 +701,6 @@
           if (e.lengthComputable) {
             const percent = (e.loaded / e.total) * 100;
             progressFill.style.width = `${percent}%`;
-            progressText.textContent = `uploading ${file.name}: ${Math.round(percent)}%`;
           }
         };
         
