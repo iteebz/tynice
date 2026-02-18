@@ -481,6 +481,23 @@
       margin-top: 0.3rem;
     }
 
+    .note-delete {
+      margin-top: 0.5rem;
+      padding: 0.35rem 0.65rem;
+      font-size: 0.75rem;
+      font-family: 'Crimson Pro', serif;
+      border: 1px solid var(--taupe);
+      background: rgba(255, 255, 255, 0.6);
+      color: var(--espresso);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .note-delete:hover {
+      background: var(--cream);
+      border-color: var(--walnut);
+    }
+
     @media (max-width: 900px) {
       .layout>.panel:first-of-type {
         position: static;
@@ -670,16 +687,61 @@
     function renderNote(note) {
       const card = document.createElement('div');
       card.className = 'note-card';
-      card.innerHTML = `
+      const canDelete = canDeleteNote(note.id);
+      
+      let html = `
         <div class="note-name">${escapeHtml(note.name)}</div>
         <div class="note-message">${escapeHtml(note.message)}</div>
         <div class="note-date">${new Date(note.created_at).toLocaleDateString()}</div>
       `;
+      
+      if (canDelete) {
+        html += `<button class="note-delete" data-id="${note.id}">Delete</button>`;
+      }
+      
+      card.innerHTML = html;
+      
+      if (canDelete) {
+        const deleteBtn = card.querySelector('.note-delete');
+        deleteBtn.addEventListener('click', () => deleteNote(note.id));
+      }
+      
       return card;
     }
 
     function escapeHtml(str) {
       return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function getAuthorTokens() {
+      try {
+        return JSON.parse(localStorage.getItem('tynice_author_tokens') || '{}');
+      } catch {
+        return {};
+      }
+    }
+
+    function saveAuthorToken(noteId, token) {
+      const tokens = getAuthorTokens();
+      tokens[noteId] = token;
+      localStorage.setItem('tynice_author_tokens', JSON.stringify(tokens));
+    }
+
+    function canDeleteNote(noteId) {
+      const tokens = getAuthorTokens();
+      return !!tokens[noteId];
+    }
+
+    async function deleteNote(noteId) {
+      if (!confirm('Delete this note?')) return;
+      try {
+        const res = await dbFetch(`/notes?id=eq.${noteId}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error();
+        const tokens = getAuthorTokens();
+        delete tokens[noteId];
+        localStorage.setItem('tynice_author_tokens', JSON.stringify(tokens));
+        await loadNotes();
+      } catch {}
     }
 
     async function loadNotes() {
@@ -709,12 +771,17 @@
       noteSubmit.disabled = true;
       noteSubmit.textContent = 'Sending...';
       try {
+        const authorToken = crypto.randomUUID();
         const res = await dbFetch('/notes', {
           method: 'POST',
           prefer: 'return=representation',
-          body: JSON.stringify({ name, message }),
+          body: JSON.stringify({ name, message, author_token: authorToken }),
         });
         if (!res.ok) throw new Error();
+        const note = await res.json();
+        if (note[0]?.id) {
+          saveAuthorToken(note[0].id, authorToken);
+        }
         notesForm.reset();
         await loadNotes();
       } catch {
