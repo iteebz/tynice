@@ -631,8 +631,11 @@
           progressFill.style.width = '0%';
           
           // 1. Get presigned URL
-          const res = await fetch(`/presign?filename=${encodeURIComponent(file.name)}&type=${encodeURIComponent(file.type)}`);
-          if (!res.ok) throw new Error('Failed to get upload link');
+          const res = await fetch(`/presign?filename=${encodeURIComponent(file.name)}&type=${encodeURIComponent(file.type)}&size=${file.size}`);
+          if (!res.ok) {
+            const { error } = await res.json().catch(() => ({}));
+            throw new Error(error || 'Failed to get upload link');
+          }
           const { url } = await res.json();
           
           // 2. Upload to R2
@@ -646,6 +649,7 @@
       }
       
       progressContainer.style.display = 'none';
+      fileInput.value = '';
       await loadGallery();
     }
 
