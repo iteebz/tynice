@@ -85,9 +85,15 @@ createServer(async (req, res) => {
     if (pathname === '/presign' && req.method === 'GET') {
       const filename = reqUrl.searchParams.get('filename');
       const type = reqUrl.searchParams.get('type') || 'video/mp4';
+      const size = Number(reqUrl.searchParams.get('size') || 0);
       if (!filename) return sendJson(res, 400, { error: 'filename required' });
-      const data = await r2.generatePresignedUrl(filename, type);
-      sendJson(res, 200, data);
+      try {
+        const data = await r2.generatePresignedUrl(filename, type, size);
+        sendJson(res, 200, data);
+      } catch (err) {
+        const status = err.code === 'INVALID_TYPE' ? 415 : err.code === 'TOO_LARGE' ? 413 : 500;
+        sendJson(res, status, { error: err.message });
+      }
       return;
     }
 
