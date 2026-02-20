@@ -672,7 +672,8 @@
           const res = await fetch(`/presign?filename=${encodeURIComponent(file.name)}&type=${encodeURIComponent(file.type)}&size=${file.size}`);
           if (!res.ok) {
             const { error } = await res.json().catch(() => ({}));
-            throw new Error(error || 'Failed to get upload link');
+            statusEl.textContent = error || 'failed — try again';
+            continue;
           }
           const { url } = await res.json();
 
@@ -681,7 +682,7 @@
           statusEl.textContent = total > 1 ? `${done} of ${total} uploaded` : 'uploaded';
         } catch (err) {
           console.error(err);
-          statusEl.textContent = `failed — keep screen on and try again`;
+          statusEl.textContent = 'failed — keep screen on and try again';
         }
       }
 
