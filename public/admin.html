@@ -162,6 +162,43 @@
       pointer-events: none;
     }
     .toast.show { opacity: 1; }
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--sand);
+      margin-bottom: 1.5rem;
+    }
+    .tab {
+      padding: 0.5rem 1.2rem;
+      font-family: 'Crimson Pro', serif;
+      font-size: 0.9rem;
+      letter-spacing: 0.06em;
+      text-transform: lowercase;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--walnut);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.15s ease;
+    }
+    .tab:hover { color: var(--espresso); }
+    .tab.active { color: var(--espresso); border-bottom-color: var(--walnut); }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .notes-list { display: flex; flex-direction: column; gap: 0.75rem; }
+    .note-card {
+      border: 1px solid var(--sand);
+      padding: 1rem 1.2rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      background: rgba(255,255,255,0.5);
+    }
+    .note-body { flex: 1; min-width: 0; }
+    .note-name { font-weight: 400; color: var(--espresso); margin-bottom: 0.2rem; }
+    .note-message { color: var(--ink); font-size: 0.95rem; margin-bottom: 0.3rem; word-break: break-word; }
+    .note-date { font-size: 0.78rem; color: var(--taupe); letter-spacing: 0.04em; }
     @media (max-width: 600px) {
       main { padding: 1rem; }
       header { padding: 0.8rem 1rem; }
@@ -179,10 +216,18 @@
     </div>
   </header>
   <main>
-    <div class="toolbar">
-      <span class="count" id="count"></span>
+    <div class="tabs">
+      <button class="tab active" id="tab-media" onclick="switchTab('media')">media</button>
+      <button class="tab" id="tab-notes" onclick="switchTab('notes')">notes</button>
     </div>
-    <div class="grid" id="grid"></div>
+    <div class="panel active" id="panel-media">
+      <div class="toolbar"><span class="count" id="count"></span></div>
+      <div class="grid" id="grid"></div>
+    </div>
+    <div class="panel" id="panel-notes">
+      <div class="toolbar"><span class="count" id="notes-count"></span></div>
+      <div class="notes-list" id="notes-list"></div>
+    </div>
   </main>
   <div class="toast" id="toast"></div>
 
@@ -283,7 +328,54 @@
       for (const item of items) grid.appendChild(renderCard(item));
     }
 
-    document.getElementById('refresh-btn').addEventListener('click', load);
+    function switchTab(name) {
+      document.getElementById('panel-media').classList.toggle('active', name === 'media');
+      document.getElementById('panel-notes').classList.toggle('active', name === 'notes');
+      document.getElementById('tab-media').classList.toggle('active', name === 'media');
+      document.getElementById('tab-notes').classList.toggle('active', name === 'notes');
+      if (name === 'notes') loadNotes();
+    }
+
+    async function deleteNote(id, cardEl) {
+      if (!confirm('Delete this note?\n\nThis cannot be undone.')) return;
+      const res = await fetch(`/admin/notes?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+      if (res.ok) { cardEl.remove(); toast('deleted'); }
+      else toast('delete failed');
+    }
+
+    async function loadNotes() {
+      const list = document.getElementById('notes-list');
+      const nc = document.getElementById('notes-count');
+      list.innerHTML = '<div class="empty">loading…</div>';
+      const res = await fetch('/admin/notes', { cache: 'no-store' });
+      const notes = await res.json();
+      list.innerHTML = '';
+      if (!Array.isArray(notes) || !notes.length) {
+        list.innerHTML = '<div class="empty">no notes yet</div>';
+        nc.textContent = '0 notes';
+        return;
+      }
+      nc.textContent = `${notes.length} notes`;
+      for (const n of notes) {
+        const card = document.createElement('div');
+        card.className = 'note-card';
+        const date = new Date(n.created_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+        const body = document.createElement('div');
+        body.className = 'note-body';
+        body.innerHTML = `<div class="note-name">${n.name || 'anonymous'}</div><div class="note-message">${n.message || ''}</div><div class="note-date">${date}</div>`;
+        const del = document.createElement('button');
+        del.className = 'btn btn-danger';
+        del.textContent = 'delete';
+        del.addEventListener('click', () => deleteNote(n.id, card));
+        card.append(body, del);
+        list.appendChild(card);
+      }
+    }
+
+    document.getElementById('refresh-btn').addEventListener('click', () => {
+      if (document.getElementById('panel-notes').classList.contains('active')) loadNotes();
+      else load();
+    });
 
     document.getElementById('logout-btn').addEventListener('click', async () => {
       await fetch('/admin/logout', { method: 'POST' });
