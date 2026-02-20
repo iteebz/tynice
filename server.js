@@ -44,7 +44,7 @@ createServer(async (req, res) => {
         const data = await r2.generatePresignedUrl(filename, type, size);
         sendJson(res, 200, data);
       } catch (err) {
-        const status = err.code === 'INVALID_TYPE' ? 415 : err.code === 'TOO_LARGE' ? 413 : 500;
+        const status = err.code === 'UNSUPPORTED_TYPE' ? 415 : err.code === 'INVALID_TYPE' ? 415 : err.code === 'TOO_LARGE' ? 413 : 500;
         sendJson(res, status, { error: err.message });
       }
       return;
