@@ -42,6 +42,10 @@ Wedding media collection site. Guests upload photos/videos → stored in Cloudfl
 | `/gallery` | GET | List uploaded media |
 | `/stats` | GET | Upload count |
 | `/folder-link` | GET | R2 public URL |
+| `/admin` | GET | Admin curation page (requires `ADMIN_PASSWORD`) |
+| `/admin/login` | GET/POST | Admin auth |
+| `/admin/logout` | POST | Clear admin session |
+| `/admin/delete` | DELETE | Delete media from R2 (admin only) |
 
 ## Data Flow
 
@@ -64,6 +68,7 @@ Wedding media collection site. Guests upload photos/videos → stored in Cloudfl
 | `R2_BUCKET` | Bucket name |
 | `R2_PUBLIC_URL` | Public bucket URL for playback |
 | `SITE_PASSWORD` | Optional: gate site behind password |
+| `ADMIN_PASSWORD` | Required for `/admin` access |
 | `SUPABASE_URL` | Supabase project URL |
 | `SUPABASE_ANON_KEY` | Supabase anon key |
 

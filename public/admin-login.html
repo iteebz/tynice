@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tynice · admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=Crimson+Pro:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/login.css">
+  <style>
+    .error { color: #8b4a4a; font-size: 0.85rem; margin-top: 0.5rem; display: none; }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>tynice</h1>
+    <p class="subtitle">admin</p>
+    <form id="form">
+      <input type="password" id="password" placeholder="password" autocomplete="current-password" required>
+      <button type="submit">enter</button>
+      <p class="error" id="error">incorrect password</p>
+    </form>
+  </div>
+  <script>
+    document.getElementById('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const password = document.getElementById('password').value;
+      const errorEl = document.getElementById('error');
+      errorEl.style.display = 'none';
+      const res = await fetch('/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+      if (res.ok) {
+        window.location.href = '/admin';
+      } else {
+        errorEl.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
