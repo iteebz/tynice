@@ -711,19 +711,28 @@
       });
     }
 
+    const videoObserver = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        const video = entry.target;
+        if (entry.isIntersecting && !video.src) {
+          video.src = video.dataset.src;
+        }
+      }
+    }, { rootMargin: '200px' });
+
     function mediaNodeFor(item) {
       const isVideo = item.name.match(/\.(mp4|webm|mov)$/i);
       
       if (isVideo) {
         const video = document.createElement('video');
-        video.src = item.thumbnailUrl;
+        video.dataset.src = item.thumbnailUrl;
         video.className = 'card-media';
         video.muted = true;
         video.loop = true;
         video.playsInline = true;
         video.preload = 'metadata';
+        videoObserver.observe(video);
         
-        // Auto-play on hover
         video.addEventListener('mouseenter', () => video.play());
         video.addEventListener('mouseleave', () => {
           video.pause();
