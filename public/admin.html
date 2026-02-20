@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tynice · admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Crimson+Pro:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream: #faf8f5;
+      --linen: #f5f0e8;
+      --sand: #e8e0d4;
+      --taupe: #c9bea8;
+      --walnut: #8b7355;
+      --espresso: #5a4a3a;
+      --ink: #2c2416;
+      --danger: #8b4a4a;
+      --shadow: 0 28px 70px -40px rgba(35, 27, 18, 0.5);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: 'Crimson Pro', Georgia, serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    header {
+      border-bottom: 1px solid var(--sand);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(6px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: 1.6rem;
+      color: var(--espresso);
+      letter-spacing: 0.05em;
+    }
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      font-size: 0.85rem;
+      color: var(--walnut);
+    }
+    .btn {
+      padding: 0.4rem 0.9rem;
+      font-family: 'Crimson Pro', serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      text-transform: lowercase;
+      cursor: pointer;
+      border: 1px solid var(--taupe);
+      background: transparent;
+      color: var(--espresso);
+      transition: all 0.15s ease;
+    }
+    .btn:hover { border-color: var(--walnut); background: rgba(255,255,255,0.6); }
+    .btn-danger { border-color: #c9a8a8; color: var(--danger); }
+    .btn-danger:hover { border-color: var(--danger); background: rgba(139,74,74,0.06); }
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    .count {
+      font-size: 0.9rem;
+      color: var(--walnut);
+      letter-spacing: 0.05em;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+    .card {
+      position: relative;
+      border: 1px solid var(--taupe);
+      background: #111;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      aspect-ratio: 1;
+    }
+    .card-media {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .card-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(11,9,7,0);
+      transition: background 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0.6rem;
+    }
+    .card:hover .card-overlay { background: rgba(11,9,7,0.6); }
+    .card-name {
+      color: rgba(244,238,229,0);
+      font-size: 0.72rem;
+      margin-bottom: 0.4rem;
+      transition: color 0.2s ease;
+      word-break: break-all;
+    }
+    .card:hover .card-name { color: rgba(244,238,229,0.7); }
+    .card-actions {
+      display: flex;
+      gap: 0.4rem;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .card:hover .card-actions { opacity: 1; }
+    .card-actions .btn {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-color: rgba(201,190,168,0.5);
+      color: #f4eee5;
+    }
+    .card-actions .btn:hover { background: rgba(255,255,255,0.15); border-color: rgba(201,190,168,0.9); }
+    .card-actions .btn-danger { border-color: rgba(201,120,120,0.5); color: #f4c0c0; }
+    .card-actions .btn-danger:hover { background: rgba(139,74,74,0.3); }
+    .empty {
+      grid-column: 1 / -1;
+      border: 1px dashed var(--taupe);
+      padding: 3rem;
+      text-align: center;
+      color: var(--espresso);
+      font-style: italic;
+    }
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      padding: 0.6rem 1.1rem;
+      background: var(--ink);
+      color: var(--cream);
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+    @media (max-width: 600px) {
+      main { padding: 1rem; }
+      header { padding: 0.8rem 1rem; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>tynice · admin</h1>
+    <div class="header-meta">
+      <span id="header-count"></span>
+      <button class="btn" id="refresh-btn">refresh</button>
+      <button class="btn btn-danger" id="logout-btn">logout</button>
+    </div>
+  </header>
+  <main>
+    <div class="toolbar">
+      <span class="count" id="count"></span>
+    </div>
+    <div class="grid" id="grid"></div>
+  </main>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const grid = document.getElementById('grid');
+    const countEl = document.getElementById('count');
+    const headerCount = document.getElementById('header-count');
+
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 2500);
+    }
+
+    function mediaEl(item) {
+      const isVideo = /\.(mp4|webm|mov)$/i.test(item.name);
+      if (isVideo) {
+        const v = document.createElement('video');
+        v.src = item.thumbnailUrl;
+        v.className = 'card-media';
+        v.muted = true;
+        v.loop = true;
+        v.playsInline = true;
+        v.preload = 'metadata';
+        v.addEventListener('mouseenter', () => v.play());
+        v.addEventListener('mouseleave', () => { v.pause(); v.currentTime = 0; });
+        return v;
+      }
+      const img = document.createElement('img');
+      img.src = item.thumbnailUrl;
+      img.className = 'card-media';
+      img.alt = item.name;
+      img.loading = 'lazy';
+      return img;
+    }
+
+    async function deleteItem(key, cardEl) {
+      if (!confirm(`Delete ${key.split('/').pop()}?\n\nThis cannot be undone.`)) return;
+      const res = await fetch(`/admin/delete?key=${encodeURIComponent(key)}`, { method: 'DELETE' });
+      if (res.ok) {
+        cardEl.remove();
+        const remaining = grid.querySelectorAll('.card').length;
+        countEl.textContent = `${remaining} uploads`;
+        headerCount.textContent = `${remaining} uploads`;
+        toast('deleted');
+      } else {
+        toast('delete failed');
+      }
+    }
+
+    function renderCard(item) {
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      const overlay = document.createElement('div');
+      overlay.className = 'card-overlay';
+
+      const name = document.createElement('div');
+      name.className = 'card-name';
+      name.textContent = item.name;
+
+      const actions = document.createElement('div');
+      actions.className = 'card-actions';
+
+      const viewBtn = document.createElement('a');
+      viewBtn.href = item.openUrl;
+      viewBtn.target = '_blank';
+      viewBtn.rel = 'noopener';
+      viewBtn.className = 'btn';
+      viewBtn.textContent = 'view';
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'btn btn-danger';
+      delBtn.textContent = 'delete';
+      delBtn.addEventListener('click', () => deleteItem(item.key, card));
+
+      actions.append(viewBtn, delBtn);
+      overlay.append(name, actions);
+      card.append(mediaEl(item), overlay);
+      return card;
+    }
+
+    async function load() {
+      grid.innerHTML = '<div class="empty">loading…</div>';
+      const res = await fetch('/gallery', { cache: 'no-store' });
+      const data = await res.json();
+      const items = data.items || [];
+      grid.innerHTML = '';
+      if (!items.length) {
+        grid.innerHTML = '<div class="empty">no uploads yet</div>';
+        countEl.textContent = '0 uploads';
+        headerCount.textContent = '0 uploads';
+        return;
+      }
+      countEl.textContent = `${items.length} uploads`;
+      headerCount.textContent = `${items.length} uploads`;
+      for (const item of items) grid.appendChild(renderCard(item));
+    }
+
+    document.getElementById('refresh-btn').addEventListener('click', load);
+
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await fetch('/admin/logout', { method: 'POST' });
+      window.location.href = '/admin/login';
+    });
+
+    load();
+  </script>
+</body>
+</html>
