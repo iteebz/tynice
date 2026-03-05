@@ -32,6 +32,14 @@ async function readBody(req) {
 if (existsSync('.env')) process.loadEnvFile('.env');
 
 const PORT = Number(process.env.PORT || 3000);
+const PASSWORD = process.env.SITE_PASSWORD || '';
+
+function checkAuth(req) {
+  if (!PASSWORD) return true;
+  const cookie = req.headers.cookie || '';
+  const match = cookie.match(/auth=([^;]+)/);
+  return match && match[1] === 'authed';
+}
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -54,6 +62,31 @@ createServer(async (req, res) => {
   try {
     const reqUrl = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
     const pathname = reqUrl.pathname;
+
+    // Site password gate
+    if (pathname === '/login' && req.method === 'POST') {
+      const body = await readBody(req);
+      const params = new URLSearchParams(body);
+      if (params.get('password')?.toLowerCase().trim() === PASSWORD.toLowerCase()) {
+        res.writeHead(302, { 'Set-Cookie': 'auth=authed; Path=/; HttpOnly; SameSite=Strict', Location: '/' });
+        res.end();
+      } else {
+        res.writeHead(302, { Location: '/login?error=1' });
+        res.end();
+      }
+      return;
+    }
+
+    if (PASSWORD && !checkAuth(req)) {
+      if (pathname === '/login') {
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.end(readFileSync(join('public', 'login.html')));
+        return;
+      }
+      res.writeHead(302, { Location: '/login' });
+      res.end();
+      return;
+    }
 
     if (pathname === '/admin/login' && req.method === 'POST') {
       const body = await readBody(req);

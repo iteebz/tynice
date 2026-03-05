@@ -44,6 +44,20 @@ A    @  →  66.241.124.235
 AAAA @  →  2a09:8280:1::d1:1dca:0
 ```
 
+## Outreach Message
+
+> Hey! As you might know, our wedding videographer lost all the footage 😅
+>
+> We've set up a little site to collect whatever photos and videos you took on the day — anything you have would mean the world to us.
+>
+> tynice.com
+>
+> It'll ask you to name the venue to get in (not case sensitive).
+>
+> You can upload straight from your camera roll — just tap and pick. Thanks so much ❤️
+>
+> — Tyson & Janice
+
 ## Development
 
 ```bash
