@@ -3,6 +3,10 @@ default:
 
 install:
     @pnpm install
+    @just hooks
+
+hooks:
+    @git config core.hooksPath .githooks
 
 dev:
     @node server.js
