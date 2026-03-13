@@ -49,12 +49,18 @@ Needs `.env` with R2 credentials to work locally. Ask Tyson if you don't have it
 - Overall polish, spacing, typography refinement
 - Lightbox experience on mobile
 
+## Setup
+
+```bash
+just install   # installs deps + activates commit hooks
+```
+
 ## Git
 
 ```bash
-# Commit format
+# Commit format (enforced by hook)
 git commit -m "style(gallery): tighten card spacing on mobile"
 
-# Types: style, fix, feat, chore
+# Types: style, fix, feat, copy, chore
 # Keep commits atomic — one visual change per commit
 ```
