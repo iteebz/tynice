@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+set -e
+
+commit_msg_file="$1"
+subject=$(head -1 "$commit_msg_file")
+
+# Allow merge commits
+if echo "$subject" | grep -qE '^Merge '; then
+    exit 0
+fi
+
+TAGS="feat|fix|style|copy|ops|docs|chore|test|refactor|revert|release"
+
+print_rules() {
+    echo "" >&2
+    echo "commit-msg rules:" >&2
+    echo "  format: tag(scope): verb object" >&2
+    echo "  tags: feat fix style copy ops docs chore test refactor revert release" >&2
+    echo "  - feat: new capability" >&2
+    echo "  - fix: bug fix" >&2
+    echo "  - style: visual/css changes" >&2
+    echo "  - copy: text, labels, messaging" >&2
+    echo "  - chore: deps, config, cleanup" >&2
+    echo "  max 72 chars, lowercase after colon" >&2
+    echo "  no em-dashes, en-dashes, commas, or trailing periods" >&2
+}
+
+# Format: tag(scope): verb object — lowercase after colon
+if ! echo "$subject" | grep -qE "^($TAGS)\([a-z0-9-]+\): [a-z].+$"; then
+    echo "BLOCKED — commit message must match: tag(scope): verb object" >&2
+    echo "  got:  $subject" >&2
+    print_rules
+    exit 1
+fi
+
+# No em-dashes or en-dashes
+if echo "$subject" | grep -q '[—–]'; then
+    echo "BLOCKED — no em-dashes or en-dashes" >&2
+    echo "  got:  $subject" >&2
+    print_rules
+    exit 1
+fi
+
+# No trailing period
+if echo "$subject" | grep -qE '\.$'; then
+    echo "BLOCKED — no trailing period" >&2
+    echo "  got:  $subject" >&2
+    print_rules
+    exit 1
+fi
+
+# No commas (comma = split the commit)
+if echo "$subject" | grep -qE ','; then
+    echo "BLOCKED — comma means split the commit" >&2
+    echo "  got:  $subject" >&2
+    print_rules
+    exit 1
+fi
+
+# Max 72 chars
+len=${#subject}
+if [ "$len" -gt 72 ]; then
+    echo "BLOCKED — subject too long ($len chars, max 72)" >&2
+    echo "  got:  $subject" >&2
+    print_rules
+    exit 1
+fi
