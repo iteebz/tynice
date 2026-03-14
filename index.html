@@ -184,10 +184,15 @@
     .upload-container {
       position: relative;
       border: 2px dashed var(--taupe);
-      padding: 2rem;
+      padding: 2.5rem 2rem;
       text-align: center;
       transition: all 0.2s ease;
       background: rgba(255, 255, 255, 0.4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
     }
 
     .upload-container:hover, .upload-container.drag-over {
@@ -202,9 +207,30 @@
       cursor: pointer;
     }
 
+    .upload-icon {
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
     .upload-prompt {
       color: var(--espresso);
       font-size: 1rem;
+      pointer-events: none;
+    }
+
+    .upload-hint {
+      font-size: 0.8rem;
+      color: var(--taupe);
+      pointer-events: none;
+    }
+
+    @media (max-width: 600px) {
+      .upload-container {
+        padding: 3rem 1.5rem;
+      }
+      .upload-prompt {
+        font-size: 1.1rem;
+      }
     }
 
     .progress-container {
@@ -213,7 +239,7 @@
     }
 
     .progress-bar {
-      height: 4px;
+      height: 6px;
       background: var(--sand);
       position: relative;
       overflow: hidden;
@@ -230,10 +256,11 @@
     }
 
     .progress-text {
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: var(--walnut);
-      margin-top: 0.5rem;
+      margin-top: 0.6rem;
       text-transform: lowercase;
+      letter-spacing: 0.04em;
     }
 
     .status {
@@ -428,29 +455,54 @@
 
     .lightbox-content {
       position: relative;
-      max-width: 94vw;
-      max-height: 94vh;
+      max-width: 96vw;
+      max-height: 92vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .lightbox-media {
       max-width: 100%;
-      max-height: 90vh;
+      max-height: 88vh;
       display: block;
       box-shadow: 0 0 80px rgba(0, 0, 0, 0.8);
-      border: 1px solid var(--taupe);
+      border: 1px solid rgba(201, 190, 168, 0.3);
     }
 
     .lightbox-close {
       position: absolute;
-      top: -2.5rem;
+      top: -3rem;
       right: 0;
       color: var(--cream);
       background: none;
       border: none;
       font-family: 'Cormorant Garamond', serif;
-      font-size: 2rem;
+      font-size: 2.2rem;
       cursor: pointer;
       line-height: 1;
+      padding: 0.5rem;
+      min-width: 44px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+
+    .lightbox-close:hover {
+      opacity: 1;
+    }
+
+    @media (max-width: 600px) {
+      .lightbox-media {
+        max-height: 80vh;
+      }
+      .lightbox-close {
+        top: -3.5rem;
+        font-size: 2.5rem;
+      }
     }
 
     .notes-section {
@@ -460,69 +512,90 @@
     .notes-form {
       display: flex;
       flex-direction: column;
-      gap: 0.6rem;
-      margin-bottom: 1.5rem;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      max-width: 560px;
     }
 
     .notes-form input,
     .notes-form textarea {
       width: 100%;
-      border: 1px solid var(--taupe);
-      background: #fff;
-      padding: 0.6rem;
+      border: none;
+      border-bottom: 1px solid var(--taupe);
+      background: transparent;
+      padding: 0.65rem 0.25rem;
       color: var(--ink);
       font-family: 'Crimson Pro', serif;
       font-size: 1rem;
-      resize: vertical;
+      resize: none;
+      transition: border-color 0.2s;
+    }
+
+    .notes-form input::placeholder,
+    .notes-form textarea::placeholder {
+      color: var(--taupe);
+      font-style: italic;
+    }
+
+    .notes-form input:focus,
+    .notes-form textarea:focus {
+      outline: none;
+      border-color: var(--walnut);
     }
 
     .notes-feed {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .notes-feed:has(.empty) {
+      grid-template-columns: 1fr;
     }
 
     .note-card {
       border: 1px solid var(--sand);
-      background: rgba(255,255,255,0.6);
-      padding: 0.85rem 1rem;
+      background: rgba(255,255,255,0.55);
+      padding: 1rem 1.1rem;
       animation: enter 400ms ease-out both;
     }
 
     .note-name {
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       color: var(--espresso);
-      margin-bottom: 0.2rem;
+      margin-bottom: 0.35rem;
     }
 
     .note-message {
       font-size: 0.95rem;
       color: var(--ink);
-      line-height: 1.6;
+      line-height: 1.65;
     }
 
     .note-date {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: var(--taupe);
-      margin-top: 0.3rem;
+      margin-top: 0.5rem;
+      letter-spacing: 0.03em;
     }
 
     .note-delete {
-      margin-top: 0.5rem;
-      padding: 0.35rem 0.65rem;
-      font-size: 0.75rem;
+      margin-top: 0.6rem;
+      padding: 0.3rem 0.6rem;
+      width: auto;
+      font-size: 0.72rem;
       font-family: 'Crimson Pro', serif;
       border: 1px solid var(--taupe);
-      background: rgba(255, 255, 255, 0.6);
-      color: var(--espresso);
+      background: transparent;
+      color: var(--taupe);
       cursor: pointer;
       transition: all 0.2s ease;
     }
 
     .note-delete:hover {
-      background: var(--cream);
+      color: var(--espresso);
       border-color: var(--walnut);
     }
 
@@ -556,8 +629,7 @@
       <p class="kicker">tyson & janice</p>
       <h1>tynice</h1>
       <p class="hero-copy">
-        You were there for the best day of our lives. Our videographer lost the footage.<br>
-        Every photo and video you captured is now irreplaceable to us — please share what you have.
+        thank you so much for being there for the best day of our lives! check out our wedding gallery and video below. our videographer lost our footage (luckily we have the tea ceremony &amp; super 8) — but we'd love to see your point of view from the day. share whatever you captured!
       </p>
     </section>
 
@@ -576,7 +648,9 @@
         <div class="uploader-row">
           <div class="upload-container" id="drop-zone">
             <input type="file" id="file-input" accept="video/*,image/*" multiple>
-            <div class="upload-prompt" id="upload-prompt">Tap or drag to select memories</div>
+            <svg class="upload-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <div class="upload-prompt" id="upload-prompt">tap to share photos & videos</div>
+            <div class="upload-hint">or drag and drop</div>
           </div>
           
           <div class="progress-container" id="progress-container">
