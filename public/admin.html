@@ -244,8 +244,16 @@
     }
 
     function mediaEl(item) {
-      const isVideo = /\.(mp4|webm|mov)$/i.test(item.name);
-      if (isVideo) {
+      if (item.type === 'video') {
+        const img = document.createElement('img');
+        img.src = item.thumbnailUrl;
+        img.className = 'card-media';
+        img.alt = item.name || 'Video';
+        img.loading = 'lazy';
+        return img;
+      }
+      const isLegacyVideo = /\.(mp4|webm|mov)$/i.test(item.name);
+      if (isLegacyVideo) {
         const v = document.createElement('video');
         v.src = item.thumbnailUrl;
         v.className = 'card-media';
@@ -265,9 +273,9 @@
       return img;
     }
 
-    async function deleteItem(key, cardEl) {
-      if (!confirm(`Delete ${key.split('/').pop()}?\n\nThis cannot be undone.`)) return;
-      const res = await fetch(`/admin/delete?key=${encodeURIComponent(key)}`, { method: 'DELETE' });
+    async function deleteItem(key, type, cardEl) {
+      if (!confirm(`Delete ${(key || '').split('/').pop()}?\n\nThis cannot be undone.`)) return;
+      const res = await fetch(`/admin/delete?key=${encodeURIComponent(key)}&type=${encodeURIComponent(type || 'image')}`, { method: 'DELETE' });
       if (res.ok) {
         cardEl.remove();
         const remaining = grid.querySelectorAll('.card').length;
@@ -303,7 +311,7 @@
       const delBtn = document.createElement('button');
       delBtn.className = 'btn btn-danger';
       delBtn.textContent = 'delete';
-      delBtn.addEventListener('click', () => deleteItem(item.key, card));
+      delBtn.addEventListener('click', () => deleteItem(item.key, item.type, card));
 
       actions.append(viewBtn, delBtn);
       overlay.append(name, actions);

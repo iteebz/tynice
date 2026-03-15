@@ -8,12 +8,20 @@ install:
 hooks:
     @git config core.hooksPath .githooks
 
+build:
+    @rm -rf dist
+    @mkdir -p dist
+    @cp index.html dist/
+    @cp -r public/* dist/
+
 dev:
-    @node server.js
+    @just build
+    @npx wrangler pages dev dist --compatibility-date 2024-12-01
 
 deploy:
-    @fly deploy
+    @just build
+    @npx wrangler pages deploy dist --project-name tynice
 
 ci:
     @pnpm install
-    @pnpm exec eslint .
+    @pnpm exec biome check .

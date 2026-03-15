@@ -675,9 +675,9 @@
             statusEl.textContent = error || 'failed — try again';
             continue;
           }
-          const { url } = await res.json();
+          const presign = await res.json();
 
-          await uploadToR2(file, url);
+          await uploadFile(file, presign);
           done++;
           statusEl.textContent = total > 1 ? `${done} of ${total} uploaded` : 'uploaded';
         } catch (err) {
@@ -692,25 +692,35 @@
       await loadGallery();
     }
 
-    function uploadToR2(file, url) {
+    function uploadFile(file, presign) {
       return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        xhr.open('PUT', url);
-        xhr.setRequestHeader('Content-Type', file.type);
-        
+        xhr.open(presign.method || 'PUT', presign.url);
+
         xhr.upload.onprogress = (e) => {
           if (e.lengthComputable) {
             const percent = (e.loaded / e.total) * 100;
             progressFill.style.width = `${percent}%`;
           }
         };
-        
-        xhr.onload = () => (xhr.status === 200 ? resolve() : reject(new Error(`upload failed: ${xhr.status}`)));
+
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) resolve();
+          else reject(new Error(`upload failed: ${xhr.status}`));
+        };
         xhr.onerror = () => reject(new Error('network error — check connection'));
         xhr.onabort = () => reject(new Error('upload interrupted — screen turned off?'));
         xhr.ontimeout = () => reject(new Error('upload timed out'));
-        xhr.timeout = 5 * 60 * 1000;
-        xhr.send(file);
+        xhr.timeout = 10 * 60 * 1000;
+
+        if (presign.stream) {
+          const form = new FormData();
+          form.append('file', file);
+          xhr.send(form);
+        } else {
+          xhr.setRequestHeader('Content-Type', file.type);
+          xhr.send(file);
+        }
       });
     }
 
@@ -724,9 +734,17 @@
     }, { rootMargin: '200px' });
 
     function mediaNodeFor(item) {
-      const isVideo = item.name.match(/\.(mp4|webm|mov)$/i);
-      
-      if (isVideo) {
+      if (item.type === 'video') {
+        const img = document.createElement('img');
+        img.src = item.thumbnailUrl;
+        img.className = 'card-media';
+        img.alt = item.name || 'Video';
+        img.loading = 'lazy';
+        return img;
+      }
+
+      const isLegacyVideo = item.name?.match(/\.(mp4|webm|mov)$/i);
+      if (isLegacyVideo) {
         const video = document.createElement('video');
         video.dataset.src = item.thumbnailUrl;
         video.className = 'card-media';
@@ -735,16 +753,11 @@
         video.playsInline = true;
         video.preload = 'metadata';
         videoObserver.observe(video);
-        
         video.addEventListener('mouseenter', () => video.play());
-        video.addEventListener('mouseleave', () => {
-          video.pause();
-          video.currentTime = 0;
-        });
-        
+        video.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
         return video;
       }
-      
+
       const img = document.createElement('img');
       img.src = item.thumbnailUrl;
       img.className = 'card-media';
@@ -810,9 +823,17 @@
 
     function openLightbox(item) {
       lightboxContainer.innerHTML = '';
-      const isVideo = item.name.match(/\.(mp4|webm|mov)$/i);
       let el;
-      if (isVideo) {
+      if (item.type === 'video' && item.openUrl) {
+        el = document.createElement('iframe');
+        el.src = item.openUrl;
+        el.allow = 'autoplay; fullscreen';
+        el.allowFullscreen = true;
+        el.style.width = '90vw';
+        el.style.maxWidth = '960px';
+        el.style.aspectRatio = '16 / 9';
+        el.style.border = 'none';
+      } else if (item.name?.match(/\.(mp4|webm|mov)$/i)) {
         el = document.createElement('video');
         el.src = item.openUrl;
         el.controls = true;
