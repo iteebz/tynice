@@ -1,20 +1,28 @@
 # tynice.com
 
-Wedding media site. Guests upload photos/videos → R2 → gallery with lightbox.
+Wedding media site. Guests upload photos/videos → gallery with lightbox.
 
 ## Architecture
 
 ```
-tynice.com (Fly.io)
-├── server.js          Node.js — presign URLs, gallery API, auth
+tynice.com (Cloudflare Pages)
+├── functions/         Pages Functions (API routes)
+│   ├── _middleware.js Site password gate
+│   ├── presign.js     Upload URL (Stream for video, R2 for images)
+│   ├── gallery.js     Merged gallery (Stream + R2)
+│   ├── login.js       Password auth
+│   └── admin/         Admin panel routes
 ├── index.html         Upload + gallery + notes (single page)
-├── public/
+├── public/            Static assets (copied to dist/ on build)
 │   ├── login.html     Password gate ("name the venue")
 │   ├── admin.html     Media/note curation
 │   └── db.js          Supabase client (guest notes)
-└── lib/r2.js          R2 client (list, presign, delete)
+└── lib/
+    ├── r2.js          R2 client (images, video fallback)
+    └── stream.js      Cloudflare Stream client (video)
 
-Storage: Cloudflare R2 (direct upload via presigned PUT)
+Images:  Cloudflare R2 (direct upload via presigned PUT)
+Videos:  Cloudflare Stream if enabled, R2 fallback
 Notes:   Supabase (single `notes` table)
 ```
 
@@ -24,41 +32,42 @@ Notes:   Supabase (single `notes` table)
 |------|--------|-------------|
 | `/` | GET | Upload + gallery page |
 | `/login` | GET/POST | Site password gate |
-| `/presign` | GET | Generate presigned upload URL |
+| `/presign` | GET | Generate upload URL (Stream or R2) |
 | `/gallery` | GET | List uploaded media |
 | `/admin` | GET | Admin curation (requires `ADMIN_PASSWORD`) |
 | `/admin/login` | GET/POST | Admin auth |
-| `/admin/delete` | DELETE | Delete media from R2 |
+| `/admin/delete` | DELETE | Delete media |
 | `/admin/notes` | GET/DELETE | Manage guest notes |
 
 ## Setup
 
 ```bash
-# R2
-npx wrangler r2 bucket create tynice-videos
-# Get API credentials: Cloudflare → R2 → Manage R2 API Tokens
-
-# Fly
-fly apps create tynice
-fly secrets set \
-  R2_ENDPOINT=https://<account_id>.r2.cloudflarestorage.com \
-  R2_ACCESS_KEY_ID=<key> \
-  R2_SECRET_ACCESS_KEY=<secret> \
-  R2_BUCKET=tynice-videos \
-  SITE_PASSWORD=merribee \
-  ADMIN_PASSWORD=<password>
-fly deploy
-
-# DNS
-# A    @  →  66.241.124.235
-# AAAA @  →  2a09:8280:1::d1:1dca:0
+pnpm install
+just build
+just deploy
 ```
+
+### Secrets (set via `npx wrangler pages secret put`)
+
+Required:
+- `R2_ENDPOINT` — R2 S3 API endpoint
+- `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` — R2 credentials
+- `R2_BUCKET` — R2 bucket name
+- `R2_PUBLIC_URL` — R2 public bucket URL
+- `SITE_PASSWORD` — guest access password
+- `ADMIN_PASSWORD` — admin panel password
+- `SUPABASE_URL` / `SUPABASE_ANON_KEY` — for guest notes
+
+Optional:
+- `CLOUDFLARE_API_TOKEN` — enables Cloudflare Stream for video uploads
+  (requires Stream subscription: CF dashboard → Stream → $5/mo)
+  Without this, videos upload to R2 directly (works but no transcoding/thumbnails)
+- `SUPABASE_SERVICE_ROLE_KEY` — elevated access for admin note deletion
 
 ## Development
 
 ```bash
-npm install
-npm start   # :3000, needs .env with R2 creds
+just dev   # wrangler pages dev on :8788, reads .env
 ```
 
 ## Outreach Message
