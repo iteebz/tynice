@@ -660,7 +660,7 @@
 
           <div id="status" class="status"></div>
           
-          <button id="refresh-btn" type="button">Refresh Gallery</button>
+          <button id="refresh-btn" type="button">refresh gallery</button>
         </div>
         <div id="gallery-preview" class="gallery-preview"></div>
       </section>
@@ -676,9 +676,9 @@
       <h2 id="notes-title">leave a note</h2>
       <p class="copy">A kind word goes a long way.</p>
       <form id="notes-form" class="notes-form">
-        <input type="text" id="note-name" placeholder="Your name" maxlength="80" required>
-        <textarea id="note-message" placeholder="Your message..." rows="3" maxlength="500" required></textarea>
-        <button type="submit" id="note-submit">Send</button>
+        <input type="text" id="note-name" placeholder="your name" maxlength="80" required>
+        <textarea id="note-message" placeholder="your message..." rows="3" maxlength="500" required></textarea>
+        <button type="submit" id="note-submit">send</button>
       </form>
       <div id="notes-feed" class="notes-feed"></div>
     </section>
@@ -1009,7 +1009,7 @@
       const message = document.getElementById('note-message').value.trim();
       if (!name || !message) return;
       noteSubmit.disabled = true;
-      noteSubmit.textContent = 'Sending...';
+      noteSubmit.textContent = 'sending...';
       try {
         const authorToken = crypto.randomUUID();
         const res = await dbFetch('/notes', {
@@ -1025,10 +1025,10 @@
         notesForm.reset();
         await loadNotes();
       } catch {
-        noteSubmit.textContent = 'Try again';
+        noteSubmit.textContent = 'try again';
       } finally {
         noteSubmit.disabled = false;
-        if (noteSubmit.textContent === 'Sending...') noteSubmit.textContent = 'Send';
+        if (noteSubmit.textContent === 'sending...') noteSubmit.textContent = 'send';
       }
     });
 
