@@ -122,6 +122,10 @@ createServer(async (req, res) => {
       if (!isAdminAuthed(req)) return sendJson(res, 401, { error: 'unauthorized' })
       const key = reqUrl.searchParams.get('key')
       if (!key) return sendJson(res, 400, { error: 'key required' })
+      // Validate key matches upload format: timestamp-uuid.ext
+      if (!/^\d+-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.[a-z0-9]+$/i.test(key)) {
+        return sendJson(res, 400, { error: 'invalid key' })
+      }
       try {
         await r2.deleteObject(key)
         return sendJson(res, 200, { ok: true })

@@ -362,7 +362,16 @@
         const date = new Date(n.created_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
         const body = document.createElement('div');
         body.className = 'note-body';
-        body.innerHTML = `<div class="note-name">${n.name || 'anonymous'}</div><div class="note-message">${n.message || ''}</div><div class="note-date">${date}</div>`;
+        const noteName = document.createElement('div');
+        noteName.className = 'note-name';
+        noteName.textContent = n.name || 'anonymous';
+        const noteMsg = document.createElement('div');
+        noteMsg.className = 'note-message';
+        noteMsg.textContent = n.message || '';
+        const noteDate = document.createElement('div');
+        noteDate.className = 'note-date';
+        noteDate.textContent = date;
+        body.append(noteName, noteMsg, noteDate);
         const del = document.createElement('button');
         del.className = 'btn btn-danger';
         del.textContent = 'delete';
