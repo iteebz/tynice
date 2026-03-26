@@ -5,11 +5,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>tynice</title>
-  <meta name="description" content="tynice">
+  <meta name="description" content="tyson & janice — wedding memories">
   <meta property="og:title" content="tynice">
-  <meta property="og:description" content="tynice">
+  <meta property="og:description" content="tyson & janice — wedding memories">
   <meta name="twitter:title" content="tynice">
-  <meta name="twitter:description" content="tynice">
+  <meta name="twitter:description" content="tyson & janice — wedding memories">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -28,9 +28,6 @@
       --espresso: #5a4a3a;
       --ink: #2c2416;
       --shadow: 0 28px 70px -40px rgba(35, 27, 18, 0.5);
-      --radius-lg: 0;
-      --radius-md: 0;
-      --radius-sm: 0;
     }
 
     * {
@@ -71,7 +68,7 @@
 
     .hero {
       max-width: 760px;
-      margin: 0 auto 2.5rem;
+      margin: 0 auto 3rem;
       text-align: center;
     }
 
@@ -119,6 +116,36 @@
       animation: fadeIn 2s ease-out 0.5s both;
     }
 
+    .section-break {
+      width: 120px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--taupe), transparent);
+      margin: 3.5rem auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 1.8rem;
+    }
+
+    .section-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-style: italic;
+      font-size: clamp(2rem, 5vw, 3rem);
+      color: var(--espresso);
+      letter-spacing: 0.04em;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-header p {
+      color: var(--walnut);
+      font-size: 1rem;
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
     .frame {
       border: 1px solid var(--taupe);
       background: var(--cream);
@@ -139,16 +166,63 @@
       object-fit: cover;
     }
 
-    .layout {
+    .video-pair {
       display: grid;
-      grid-template-columns: minmax(310px, 0.35fr) 1fr;
-      gap: 2rem;
-      align-items: start;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
     }
 
-    .layout>.panel:first-of-type {
-      position: sticky;
-      top: 2rem;
+    @media (max-width: 700px) {
+      .video-pair {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .video-pair .frame {
+      margin-bottom: 0;
+    }
+
+    .video-label {
+      padding: 0.55rem 0.75rem;
+      font-size: 0.8rem;
+      color: var(--walnut);
+      letter-spacing: 0.1em;
+      text-transform: lowercase;
+      text-align: center;
+      background: var(--cream);
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .photo-grid img {
+      width: 100%;
+      display: block;
+      border: 1px solid var(--taupe);
+      box-shadow: var(--shadow);
+      cursor: zoom-in;
+      transition: transform 0.2s ease;
+    }
+
+    .photo-grid img:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.6);
+    }
+
+    .photo-placeholder {
+      border: 1px dashed var(--taupe);
+      background: var(--cream);
+      padding: 2rem;
+      text-align: center;
+      color: var(--taupe);
+      font-style: italic;
+      font-size: 0.9rem;
+      margin-top: 1.5rem;
     }
 
     .panel {
@@ -173,6 +247,18 @@
       color: var(--espresso);
       font-size: 0.95rem;
       margin-bottom: 0.8rem;
+    }
+
+    .share-layout {
+      display: grid;
+      grid-template-columns: minmax(310px, 0.35fr) 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .share-layout > .panel:first-of-type {
+      position: sticky;
+      top: 2rem;
     }
 
     .uploader-row {
@@ -401,6 +487,15 @@
       background: rgba(255, 255, 255, 0.6);
     }
 
+    input, textarea {
+      font-family: 'Crimson Pro', serif;
+      font-size: 1rem;
+      border: 1px solid var(--sand);
+      background: transparent;
+      padding: 0.5rem;
+      color: var(--ink);
+    }
+
     input:focus,
     textarea:focus {
       outline: none;
@@ -421,7 +516,6 @@
         opacity: 0;
         transform: translateY(10px);
       }
-
       to {
         opacity: 1;
         transform: translateY(0);
@@ -429,13 +523,8 @@
     }
 
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-
-      to {
-        opacity: 1;
-      }
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     .lightbox {
@@ -636,8 +725,38 @@
       border-color: var(--walnut);
     }
 
+    .thank-you {
+      text-align: center;
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    .thank-you h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-style: italic;
+      font-size: clamp(2rem, 5vw, 3rem);
+      color: var(--espresso);
+      margin-bottom: 1rem;
+    }
+
+    .thank-you p {
+      color: var(--espresso);
+      font-size: 1.05rem;
+      line-height: 1.85;
+      margin-bottom: 0.8rem;
+    }
+
+    .thank-you .signoff {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.3rem;
+      color: var(--walnut);
+      margin-top: 1.5rem;
+    }
+
     @media (max-width: 900px) {
-      .layout>.panel:first-of-type {
+      .share-layout > .panel:first-of-type {
         position: static;
       }
 
@@ -649,7 +768,7 @@
         padding: 0 0.5rem;
       }
 
-      .layout {
+      .share-layout {
         grid-template-columns: 1fr;
       }
 
@@ -666,52 +785,106 @@
       <p class="kicker">tyson & janice</p>
       <h1>tynice</h1>
       <p class="hero-copy">
-        thank you so much for being there for the best day of our lives! check out our wedding gallery and video below. our videographer lost our footage (luckily we have the tea ceremony &amp; super 8) — but we'd love to see your point of view from the day. share whatever you captured!
+        thank you so much for being there for the best day of our lives. our videographer lost most of the footage, but luckily we kept the tea ceremony and super 8 films. we'd love to see your point of view from the day too.
       </p>
     </section>
 
-    <section class="frame" aria-label="Featured video">
-      <div class="frame-inner lead-video">
-        <video controls playsinline preload="metadata" autoplay loop>
-          <source src="https://pub-fe7625b2c4df4b5aa7c637299e6a569a.r2.dev/tynice.mp4" type="video/mp4">
-        </video>
+    <!-- tea ceremony -->
+    <section aria-labelledby="ceremony-title">
+      <div class="section-header">
+        <h2 id="ceremony-title">tea ceremony</h2>
+      </div>
+
+      <div class="frame">
+        <div class="frame-inner lead-video">
+          <video controls playsinline preload="metadata">
+            <source src="/media/videos/Tea Ceremony Film from Janice Quach.mov" type="video/quicktime">
+          </video>
+        </div>
+      </div>
+
+      <div class="photo-placeholder">photos coming soon</div>
+    </section>
+
+    <div class="section-break"></div>
+
+    <!-- wedding -->
+    <section aria-labelledby="wedding-title">
+      <div class="section-header">
+        <h2 id="wedding-title">wedding</h2>
+      </div>
+
+      <div class="video-pair">
+        <div class="frame">
+          <div class="frame-inner lead-video">
+            <video controls playsinline preload="metadata">
+              <source src="/media/videos/Janice Tyson Trailer.mov" type="video/quicktime">
+            </video>
+          </div>
+          <div class="video-label">trailer</div>
+        </div>
+        <div class="frame">
+          <div class="frame-inner lead-video">
+            <video controls playsinline preload="metadata">
+              <source src="/media/videos/Janice Tyson Super 8 (1).mov" type="video/quicktime">
+            </video>
+          </div>
+          <div class="video-label">super 8</div>
+        </div>
+      </div>
+
+      <div class="photo-grid">
+        <img src="/media/wedding/WD251115_C9179TR_P1_Janice&Tyson sp-54.jpg" alt="Wedding photo" loading="lazy">
       </div>
     </section>
 
-    <section class="layout">
-      <section class="panel" aria-labelledby="upload-title">
-        <h2 id="upload-title">share</h2>
-        <p class="copy">Choose photos and videos to upload directly to our gallery.</p>
-        <div class="uploader-row">
-          <div class="upload-container" id="drop-zone">
-            <input type="file" id="file-input" accept="video/*,image/*" multiple>
-            <svg class="upload-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            <div class="upload-prompt" id="upload-prompt">tap to share photos & videos</div>
-            <div class="upload-hint">or drag and drop</div>
-          </div>
-          
-          <div class="progress-container" id="progress-container">
-            <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-            <div class="progress-text" id="progress-text">uploading...</div>
-          </div>
+    <div class="section-break"></div>
 
-          <div id="status" class="status"></div>
-          
-          <button id="refresh-btn" type="button">refresh gallery</button>
-        </div>
-        <div id="gallery-preview" class="gallery-preview"></div>
-      </section>
+    <!-- share your pov -->
+    <section aria-labelledby="share-title">
+      <div class="section-header">
+        <h2 id="share-title">share your pov</h2>
+        <p>we want the good stuff. not the shaky phone recordings, but the moments you actually captured well. a candid laugh, a quiet detail, the dance floor at its peak.</p>
+      </div>
 
-      <section class="panel" aria-labelledby="gallery-title">
-        <h2 id="gallery-title">gallery</h2>
-        <p id="memory-count" class="gallery-note"></p>
-        <div id="gallery" class="gallery-feed"></div>
-      </section>
+      <div class="share-layout">
+        <section class="panel" aria-labelledby="upload-title">
+          <h2 id="upload-title">upload</h2>
+          <p class="copy">Choose photos and videos to upload directly to our gallery.</p>
+          <div class="uploader-row">
+            <div class="upload-container" id="drop-zone">
+              <input type="file" id="file-input" accept="video/*,image/*" multiple>
+              <svg class="upload-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <div class="upload-prompt" id="upload-prompt">tap to share photos & videos</div>
+              <div class="upload-hint">or drag and drop</div>
+            </div>
+
+            <div class="progress-container" id="progress-container">
+              <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+              <div class="progress-text" id="progress-text">uploading...</div>
+            </div>
+
+            <div id="status" class="status"></div>
+
+            <button id="refresh-btn" type="button">refresh gallery</button>
+          </div>
+          <div id="gallery-preview" class="gallery-preview"></div>
+        </section>
+
+        <section class="panel" aria-labelledby="gallery-title">
+          <h2 id="gallery-title">gallery</h2>
+          <p id="memory-count" class="gallery-note"></p>
+          <div id="gallery" class="gallery-feed"></div>
+        </section>
+      </div>
     </section>
 
+    <div class="section-break"></div>
+
+    <!-- notes -->
     <section class="panel notes-section" aria-labelledby="notes-title">
       <h2 id="notes-title">leave a note</h2>
-      <p class="copy">A kind word goes a long way.</p>
+      <p class="copy">a kind word goes a long way.</p>
       <form id="notes-form" class="notes-form">
         <input type="text" id="note-name" placeholder="your name" maxlength="80" required>
         <textarea id="note-message" placeholder="your message..." rows="3" maxlength="500" required></textarea>
@@ -719,14 +892,28 @@
       </form>
       <div id="notes-feed" class="notes-feed"></div>
     </section>
+
+    <div class="section-break"></div>
+
+    <!-- thank you -->
+    <section class="thank-you">
+      <h2>thank you</h2>
+      <p>
+        we still can't believe how lucky we are to have had every single one of you there. from the tea ceremony in the morning to the last dance, you made our day everything we dreamed it would be. we felt so much love in that room and we carry it with us every day.
+      </p>
+      <p>
+        we hope you had as much fun as we did. here's to many more good times together.
+      </p>
+      <div class="signoff">all our love, tyson & janice</div>
+    </section>
   </main>
 
   <div id="lightbox" class="lightbox" aria-hidden="true">
     <div class="lightbox-content">
-      <button id="lightbox-close" class="lightbox-close">×</button>
-      <button id="lightbox-prev" class="lightbox-nav lightbox-prev" aria-label="Previous">‹</button>
+      <button id="lightbox-close" class="lightbox-close">&times;</button>
+      <button id="lightbox-prev" class="lightbox-nav lightbox-prev" aria-label="Previous">&lsaquo;</button>
       <div id="lightbox-container"></div>
-      <button id="lightbox-next" class="lightbox-nav lightbox-next" aria-label="Next">›</button>
+      <button id="lightbox-next" class="lightbox-nav lightbox-next" aria-label="Next">&rsaquo;</button>
     </div>
   </div>
 
@@ -779,13 +966,13 @@
         try {
           progressFill.style.width = '0%';
           progressText.textContent = total > 1
-            ? `uploading ${done + 1} of ${total}…`
-            : 'uploading…';
+            ? `uploading ${done + 1} of ${total}...`
+            : 'uploading...';
 
           const res = await fetch(`/presign?filename=${encodeURIComponent(file.name)}&type=${encodeURIComponent(file.type)}&size=${file.size}`);
           if (!res.ok) {
             const { error } = await res.json().catch(() => ({}));
-            statusEl.textContent = error || 'failed — try again';
+            statusEl.textContent = error || 'failed -- try again';
             continue;
           }
           const { url } = await res.json();
@@ -795,7 +982,7 @@
           statusEl.textContent = total > 1 ? `${done} of ${total} uploaded` : 'uploaded';
         } catch (err) {
           console.error(err);
-          statusEl.textContent = (err?.message || 'failed') + ' — keep screen on and try again';
+          statusEl.textContent = (err?.message || 'failed') + ' -- keep screen on and try again';
         }
       }
 
@@ -810,17 +997,17 @@
         const xhr = new XMLHttpRequest();
         xhr.open('PUT', url);
         xhr.setRequestHeader('Content-Type', file.type);
-        
+
         xhr.upload.onprogress = (e) => {
           if (e.lengthComputable) {
             const percent = (e.loaded / e.total) * 100;
             progressFill.style.width = `${percent}%`;
           }
         };
-        
+
         xhr.onload = () => (xhr.status === 200 ? resolve() : reject(new Error(`upload failed: ${xhr.status}`)));
-        xhr.onerror = () => reject(new Error('network error — check connection'));
-        xhr.onabort = () => reject(new Error('upload interrupted — screen turned off?'));
+        xhr.onerror = () => reject(new Error('network error -- check connection'));
+        xhr.onabort = () => reject(new Error('upload interrupted -- screen turned off?'));
         xhr.ontimeout = () => reject(new Error('upload timed out'));
         xhr.timeout = 5 * 60 * 1000;
         xhr.send(file);
@@ -838,7 +1025,7 @@
 
     function mediaNodeFor(item) {
       const isVideo = item.name.match(/\.(mp4|webm|mov)$/i);
-      
+
       if (isVideo) {
         const video = document.createElement('video');
         video.dataset.src = item.thumbnailUrl;
@@ -848,16 +1035,16 @@
         video.playsInline = true;
         video.preload = 'metadata';
         videoObserver.observe(video);
-        
+
         video.addEventListener('mouseenter', () => video.play());
         video.addEventListener('mouseleave', () => {
           video.pause();
           video.currentTime = 0;
         });
-        
+
         return video;
       }
-      
+
       const img = document.createElement('img');
       img.src = item.thumbnailUrl;
       img.className = 'card-media';
@@ -875,7 +1062,7 @@
         const items = data.items || [];
 
         if (items.length === 0) {
-          galleryEl.innerHTML = '<div class="empty">no uploads yet — be the first to share a moment</div>';
+          galleryEl.innerHTML = '<div class="empty">no uploads yet -- be the first to share a moment</div>';
           return;
         }
 
@@ -1005,24 +1192,24 @@
       const card = document.createElement('div');
       card.className = 'note-card';
       const canDelete = canDeleteNote(note.id);
-      
+
       let html = `
         <div class="note-name">${escapeHtml(note.name)}</div>
         <div class="note-message">${escapeHtml(note.message)}</div>
         <div class="note-date">${new Date(note.created_at).toLocaleDateString()}</div>
       `;
-      
+
       if (canDelete) {
         html += `<button class="note-delete" data-id="${note.id}">Delete</button>`;
       }
-      
+
       card.innerHTML = html;
-      
+
       if (canDelete) {
         const deleteBtn = card.querySelector('.note-delete');
         deleteBtn.addEventListener('click', () => deleteNote(note.id));
       }
-      
+
       return card;
     }
 
