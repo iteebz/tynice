@@ -48,6 +48,9 @@ const MIME = {
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
   '.svg': 'image/svg+xml',
+  '.mov': 'video/mp4',
+  '.mp4': 'video/mp4',
+  '.webm': 'video/webm',
 }
 
 function sendJson(res, statusCode, payload) {
