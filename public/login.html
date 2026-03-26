@@ -117,10 +117,10 @@
 <body>
     <form method="POST" action="/login">
         <div class="logo">tynice</div>
-        <p class="hint">where did we get married?</p>
-        <input type="text" name="password" placeholder="name the venue" autofocus autocomplete="off" autocapitalize="none" spellcheck="false">
+        <label for="password" class="hint">where did we get married?</label>
+        <input type="text" name="password" id="password" placeholder="name the venue" autofocus autocomplete="off" autocapitalize="none" spellcheck="false">
         <button type="submit">enter</button>
-        <p class="error" id="error-msg" hidden>try again</p>
+        <p class="error" id="error-msg" role="alert" hidden>try again</p>
         <script>
             if (location.search.includes('error')) {
                 document.getElementById('error-msg').hidden = false;
