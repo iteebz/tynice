@@ -8,8 +8,13 @@
   <meta name="description" content="tyson & janice — wedding memories">
   <meta property="og:title" content="tynice">
   <meta property="og:description" content="tyson & janice — wedding memories">
+  <meta property="og:image" content="https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/images/poster-trailer.jpg">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="tynice">
   <meta name="twitter:description" content="tyson & janice — wedding memories">
+  <meta name="twitter:image" content="https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/images/poster-trailer.jpg">
+  <meta name="theme-color" content="#faf8f5">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -18,7 +23,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="dns-prefetch" href="https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev">
-  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@300;400&display=swap" rel="stylesheet">
   <style>
     :root {
       --cream: #faf8f5;
@@ -123,23 +128,47 @@
       line-height: 1.7;
     }
 
-    .frame {
+    /* video cards */
+    .video-card {
       border: 1px solid #000;
       background: var(--cream);
       box-shadow: var(--shadow);
       margin-bottom: 1.5rem;
+      cursor: pointer;
     }
 
-    .frame-inner {
-      border: 1px solid var(--sand);
-      background: #000;
-    }
-
-    .lead-video video {
-      width: 100%;
-      display: block;
+    .video-thumb {
+      position: relative;
       aspect-ratio: 16 / 9;
-      object-fit: cover;
+      background-size: cover;
+      background-position: center;
+      background-color: #000;
+    }
+
+    .play-btn {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+
+    .play-btn svg {
+      width: 56px;
+      height: 56px;
+      color: rgba(255, 255, 255, 0.9);
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .video-card:hover .play-btn svg {
+      transform: scale(1.1);
+      opacity: 1;
     }
 
     .video-pair {
@@ -149,7 +178,7 @@
       margin-bottom: 1.5rem;
     }
 
-    .video-pair .frame {
+    .video-pair .video-card {
       margin-bottom: 0;
     }
 
@@ -162,6 +191,7 @@
       background: var(--cream);
     }
 
+    /* photo galleries */
     .gallery-columns {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -237,7 +267,11 @@
       letter-spacing: 0.08em;
       color: #000;
       text-decoration: none;
-      transition: border-color 0.2s, background 0.2s;
+      transition: background 0.2s;
+    }
+
+    .share-cta:hover {
+      background: rgba(0,0,0,0.05);
     }
 
     .thank-you {
@@ -267,18 +301,18 @@
       margin-top: 1.5rem;
     }
 
+    /* lightbox — shared for video and photos */
     .lightbox {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.92);
+      background: rgba(0, 0, 0, 0.95);
       z-index: 100;
       display: flex;
       align-items: center;
       justify-content: center;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.3s ease;
-      cursor: zoom-out;
+      transition: opacity 0.25s ease;
     }
 
     .lightbox.open {
@@ -286,11 +320,37 @@
       pointer-events: auto;
     }
 
-    .lightbox img {
+    .lightbox-close {
+      position: fixed;
+      top: 1.2rem;
+      right: 1.5rem;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.7);
+      font-size: 2rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0.25rem;
+      transition: color 0.15s;
+    }
+
+    .lightbox-close:hover {
+      color: #fff;
+    }
+
+    #lightbox-img {
       max-width: 90vw;
       max-height: 90vh;
       object-fit: contain;
-      display: block;
+      display: none;
+    }
+
+    #lightbox-video {
+      max-width: 92vw;
+      max-height: 90vh;
+      width: 100%;
+      display: none;
+      outline: none;
     }
 
     @keyframes fadeIn {
@@ -302,7 +362,6 @@
       main {
         padding: 2rem 0 3rem;
       }
-
       .hero {
         padding: 0 0.5rem;
       }
@@ -312,7 +371,6 @@
       .video-pair {
         grid-template-columns: 1fr;
       }
-
       .gallery-columns {
         grid-template-columns: 1fr;
         gap: 2rem;
@@ -336,35 +394,32 @@
         <h2 id="wedding-title">Wedding videos</h2>
       </div>
 
-      <div class="frame">
-        <div class="frame-inner lead-video">
-          <video controls playsinline preload="none">
-            <source src="https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/tynice-super8.mov">
-            <p>Your browser can't play this video. <a href="https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/tynice-super8.mov">Download it instead.</a></p>
-          </video>
+      <div class="video-card" data-src="https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/tynice-super8.mov">
+        <div class="video-thumb" style="background-image: url('https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/images/poster-super8.jpg')">
+          <button class="play-btn" aria-label="Play super 8">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </button>
         </div>
         <div class="video-label">super 8</div>
       </div>
 
       <div class="video-pair">
-        <div class="frame">
-          <div class="frame-inner lead-video">
-            <video controls playsinline preload="none">
-              <source src="https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/tynice-trailer.mov">
-              <p>Your browser can't play this video. <a href="https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/tynice-trailer.mov">Download it instead.</a></p>
-            </video>
-          </div>
-          <div class="video-label">trailer</div>
+      <div class="video-card" data-src="https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/tynice-trailer.mov">
+        <div class="video-thumb" style="background-image: url('https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/images/poster-trailer.jpg')">
+          <button class="play-btn" aria-label="Play trailer">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </button>
         </div>
-        <div class="frame">
-          <div class="frame-inner lead-video">
-            <video controls playsinline preload="none">
-              <source src="https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/tynice-tea-ceremony.mov">
-              <p>Your browser can't play this video. <a href="https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/tynice-tea-ceremony.mov">Download it instead.</a></p>
-            </video>
-          </div>
-          <div class="video-label">tea ceremony</div>
+        <div class="video-label">trailer</div>
+      </div>
+      <div class="video-card" data-src="https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/tynice-tea-ceremony.mov">
+        <div class="video-thumb" style="background-image: url('https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/images/poster-tea-ceremony.jpg')">
+          <button class="play-btn" aria-label="Play tea ceremony">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </button>
         </div>
+        <div class="video-label">tea ceremony</div>
+      </div>
       </div>
     </section>
 
@@ -428,44 +483,75 @@
     </section>
   </main>
 
-  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true">
+    <button id="lightbox-close" class="lightbox-close" aria-label="Close">&times;</button>
     <img id="lightbox-img" src="" alt="">
+    <video id="lightbox-video" controls playsinline></video>
   </div>
 
   <script>
-    // blur-up: swap placeholder for full-res on load
-    document.querySelectorAll('.gallery-img').forEach(img => {
-      const full = new Image()
-      full.onload = () => {
-        img.src = full.src
-        img.classList.add('loaded')
-      }
-      full.src = img.dataset.src
-    })
-
-    // lightbox
     const lightbox = document.getElementById('lightbox')
     const lightboxImg = document.getElementById('lightbox-img')
+    const lightboxVideo = document.getElementById('lightbox-video')
+    const lightboxClose = document.getElementById('lightbox-close')
 
-    document.querySelectorAll('.gallery-img').forEach(img => {
-      img.addEventListener('click', () => {
-        lightboxImg.src = img.dataset.src || img.src
-        lightbox.classList.add('open')
-        document.body.style.overflow = 'hidden'
-      })
-    })
+    function openLightbox(type, src) {
+      if (type === 'video') {
+        lightboxVideo.src = src
+        lightboxVideo.style.display = 'block'
+        lightboxImg.style.display = 'none'
+        lightboxVideo.play()
+      } else {
+        lightboxImg.src = src
+        lightboxImg.style.display = 'block'
+        lightboxVideo.style.display = 'none'
+      }
+      lightbox.classList.add('open')
+      document.body.style.overflow = 'hidden'
+    }
 
-    lightbox.addEventListener('click', () => {
+    function closeLightbox() {
       lightbox.classList.remove('open')
       document.body.style.overflow = ''
+      lightboxVideo.pause()
+      lightboxVideo.src = ''
+      lightboxImg.src = ''
+    }
+
+    // video cards
+    document.querySelectorAll('.video-card').forEach(card => {
+      card.addEventListener('click', () => openLightbox('video', card.dataset.src))
     })
 
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') {
-        lightbox.classList.remove('open')
-        document.body.style.overflow = ''
-      }
+    // photo lightbox
+    document.querySelectorAll('.gallery-img').forEach(img => {
+      img.addEventListener('click', () => openLightbox('photo', img.dataset.src || img.src))
     })
+
+    lightboxClose.addEventListener('click', closeLightbox)
+    lightbox.addEventListener('click', e => {
+      if (e.target === lightbox) closeLightbox()
+    })
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeLightbox()
+    })
+
+    // blur-up: load full-res images via IntersectionObserver
+    const imgObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return
+        const img = entry.target
+        const full = new Image()
+        full.onload = () => {
+          img.src = full.src
+          img.classList.add('loaded')
+        }
+        full.src = img.dataset.src
+        imgObserver.unobserve(img)
+      })
+    }, { rootMargin: '200px' })
+
+    document.querySelectorAll('.gallery-img[data-src]').forEach(img => imgObserver.observe(img))
   </script>
 </body>
 
