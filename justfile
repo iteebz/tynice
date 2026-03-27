@@ -3,17 +3,10 @@ default:
 
 install:
     @pnpm install
-    @just hooks
-
-hooks:
-    @git config core.hooksPath .githooks
 
 dev:
-    @node server.js
-
-deploy:
-    @fly deploy
+    @npx serve public
 
 ci:
     @pnpm install
-    @pnpm exec eslint .
+    @pnpm exec biome check .
