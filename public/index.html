@@ -372,7 +372,16 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: opacity 0.5s ease;
+      transition: opacity 0.8s ease;
+    }
+
+    #gate::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
     }
 
     #gate.hidden {
@@ -382,50 +391,85 @@
 
     .gate-inner {
       text-align: center;
-      max-width: 360px;
+      max-width: 320px;
       width: 92vw;
+      position: relative;
+    }
+
+    .gate-sigil {
+      height: 110px;
+      width: auto;
+      mix-blend-mode: multiply;
+      margin-bottom: 3rem;
+      animation: fadeIn 1.8s ease-out 0.2s both;
+    }
+
+    .gate-prompt {
+      animation: fadeIn 2s ease-out 0.7s both;
+      font-size: 0.9rem;
+      letter-spacing: 0.06em;
+      line-height: 1.8;
+      margin-bottom: 1.2rem;
+      opacity: 0.6;
     }
 
     .gate-inner input {
       display: block;
-      width: 100%;
+      width: 60%;
+      margin: 0 auto 2.8rem;
       background: transparent;
       border: none;
-      border-bottom: 1px solid #000;
+      border-bottom: 1px solid rgba(0,0,0,0.25);
       padding: 0.5rem 0;
       font-family: 'Crimson Pro', Georgia, serif;
       font-size: 1rem;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.12em;
       text-align: center;
       outline: none;
-      margin-bottom: 1.8rem;
       border-radius: 0;
+      animation: fadeIn 2s ease-out 1s both;
+      transition: border-color 0.3s;
+    }
+
+    .gate-inner input:focus {
+      border-bottom-color: rgba(0,0,0,0.6);
     }
 
     .gate-inner input::placeholder {
-      opacity: 0.35;
+      opacity: 0.2;
+      font-style: italic;
+      letter-spacing: 0.08em;
     }
 
     .gate-btn {
-      padding: 0.6rem 2rem;
+      padding: 0.65rem 2.2rem;
       border: 1px solid #000;
       font-family: 'Crimson Pro', Georgia, serif;
-      font-size: 0.95rem;
-      letter-spacing: 0.08em;
+      font-size: 0.85rem;
+      letter-spacing: 0.14em;
+      text-transform: lowercase;
       background: transparent;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: background 0.2s, color 0.2s;
+      animation: fadeIn 2s ease-out 1.2s both;
     }
 
     .gate-btn:hover {
-      background: rgba(0,0,0,0.05);
+      background: #000;
+      color: var(--cream);
     }
 
     .gate-error {
-      margin-top: 1rem;
-      font-size: 0.85rem;
-      letter-spacing: 0.06em;
-      opacity: 0.5;
+      margin-top: 2rem;
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      font-style: italic;
+    }
+
+    .gate-error.visible {
+      opacity: 0.35;
     }
 
     @media (max-width: 900px) {
@@ -452,11 +496,11 @@
 <body>
   <div id="gate">
     <div class="gate-inner">
-      <h1>tynice</h1>
-      <p class="hero-copy">where did we get married?</p>
-      <input type="text" id="gate-input" placeholder="venue name" autocomplete="off">
+      <img class="gate-sigil" src="/tynice.png" alt="tynice">
+      <p class="gate-prompt">where did we get married?</p>
+      <input type="text" id="gate-input" placeholder="venue" autocomplete="off" spellcheck="false">
       <button class="gate-btn" id="gate-btn">enter</button>
-      <p class="gate-error" id="gate-error" hidden>try again</p>
+      <p class="gate-error" id="gate-error">not quite</p>
     </div>
   </div>
 
@@ -635,37 +679,23 @@
 
     // password gate
     const gate = document.getElementById('gate')
+    const gateInput = document.getElementById('gate-input')
+    const gateError = document.getElementById('gate-error')
 
-    function getCookie(name) {
-      return document.cookie.split('; ').find(r => r.startsWith(name + '='))?.split('=')[1]
-    }
-
-    function setCookie(name, value, days) {
-      const expires = new Date(Date.now() + days * 864e5).toUTCString()
-      document.cookie = `${name}=${value}; expires=${expires}; path=/`
-    }
-
-    if (getCookie('tynice_auth') === '1') {
-      gate.style.display = 'none'
-    } else {
-      const gateInput = document.getElementById('gate-input')
-      const gateError = document.getElementById('gate-error')
-
-      function checkGate() {
-        if (gateInput.value.trim().toLowerCase() === 'merribee') {
-          setCookie('tynice_auth', '1', 365)
-          gate.classList.add('hidden')
-          setTimeout(() => { gate.style.display = 'none' }, 500)
-        } else {
-          gateError.hidden = false
-          gateInput.value = ''
-          gateInput.focus()
-        }
+    function checkGate() {
+      if (gateInput.value.trim().toLowerCase() === 'merribee') {
+        gate.classList.add('hidden')
+        setTimeout(() => { gate.style.display = 'none' }, 800)
+      } else {
+        gateError.classList.add('visible')
+        gateInput.value = ''
+        gateInput.focus()
       }
-
-      document.getElementById('gate-btn').addEventListener('click', checkGate)
-      gateInput.addEventListener('keydown', e => { if (e.key === 'Enter') checkGate() })
     }
+
+    document.getElementById('gate-btn').addEventListener('click', checkGate)
+    gateInput.addEventListener('keydown', e => { if (e.key === 'Enter') checkGate() })
+    gateInput.addEventListener('input', () => gateError.classList.remove('visible'))
   </script>
 </body>
 
