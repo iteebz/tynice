@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only
+      - run: npx wrangler pages deploy public/ --project-name tynice --commit-dirty=true
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: 5b1295e874631bb6d428fc7a75806e6e
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

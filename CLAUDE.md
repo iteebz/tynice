@@ -1,43 +1,35 @@
 # tynice.com
 
-Wedding memories site for Tyson & Janice. Guests can watch wedding videos and browse photos.
+Static wedding memory site. Everything lives in `public/index.html` — inline CSS and JS, no framework, no build step.
 
 ## Stack
 
-- **Frontend**: Single `public/index.html` — inline CSS, no JS, no framework
-- **Videos**: Cloudflare R2 (`tynice` bucket on Tyson's account). Public base URL: `https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev`
 - **Hosting**: Cloudflare Pages. Deploy root is `public/`
+- **Videos**: Cloudflare R2. Public base: `https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev`
+- **Fonts**: Medusa (headings, Adobe Typekit `byo4nzt`), Crimson Pro (body, Google Fonts)
+- **Palette**: cream `#faf8f5`, black. No border-radius anywhere.
+
+## Gate
+
+Shows on every load. Answer: `merribee`. No cookie — intentional.
 
 ## Deploy
 
 ```bash
-wrangler pages deploy public/ --project-name tynice
+just deploy   # wrangler pages deploy public/
 ```
 
-`media/videos/` is excluded via `.cfignore` — videos live on R2, not in the deploy.
-
-## Development
-
-```bash
-just dev   # serves public/ on localhost
-just ci    # biome check
-```
-
-## Design
-
-- Fonts: Medusa (headings, via Adobe Typekit `byo4nzt`), Crimson Pro (body, via Google Fonts)
-- Palette: cream (`#faf8f5`), sand (`#d8d8d8`), black. No border-radius anywhere.
-- Noise texture overlay via inline SVG data URI on `body::before`
+Auto-deploys on push to `main` via GitHub Actions — needs `CLOUDFLARE_API_TOKEN` secret.
 
 ## Videos on R2
 
 | File | Label |
 |------|-------|
-| `tynice-super8.mov` | super 8 |
-| `tynice-trailer.mov` | trailer |
-| `tynice-tea-ceremony.mov` | tea ceremony |
+| `videos/tynice-super8.mp4` | super 8 |
+| `videos/tynice-trailer.mp4` | trailer |
+| `videos/tynice-tea-ceremony.mp4` | tea ceremony |
 
-Upload with:
+Upload:
 ```bash
 AWS_ACCESS_KEY_ID=... AWS_SECRET_ACCESS_KEY=... \
 aws s3 cp <file> s3://tynice/<file> \
