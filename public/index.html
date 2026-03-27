@@ -358,6 +358,76 @@
       to { opacity: 1; }
     }
 
+    /* gallery centering */
+    .gallery-columns > div {
+      text-align: center;
+    }
+
+    /* password gate */
+    #gate {
+      position: fixed;
+      inset: 0;
+      background: var(--cream);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s ease;
+    }
+
+    #gate.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .gate-inner {
+      text-align: center;
+      max-width: 360px;
+      width: 92vw;
+    }
+
+    .gate-inner input {
+      display: block;
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid #000;
+      padding: 0.5rem 0;
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      text-align: center;
+      outline: none;
+      margin-bottom: 1.8rem;
+      border-radius: 0;
+    }
+
+    .gate-inner input::placeholder {
+      opacity: 0.35;
+    }
+
+    .gate-btn {
+      padding: 0.6rem 2rem;
+      border: 1px solid #000;
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      background: transparent;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .gate-btn:hover {
+      background: rgba(0,0,0,0.05);
+    }
+
+    .gate-error {
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      opacity: 0.5;
+    }
+
     @media (max-width: 900px) {
       main {
         padding: 2rem 0 3rem;
@@ -380,6 +450,16 @@
 </head>
 
 <body>
+  <div id="gate">
+    <div class="gate-inner">
+      <h1>tynice</h1>
+      <p class="hero-copy">where did we get married?</p>
+      <input type="text" id="gate-input" placeholder="venue name" autocomplete="off">
+      <button class="gate-btn" id="gate-btn">enter</button>
+      <p class="gate-error" id="gate-error" hidden>try again</p>
+    </div>
+  </div>
+
   <main>
     <section class="hero">
       <h1>Tyson &amp; Janice</h1>
@@ -552,6 +632,40 @@
     }, { rootMargin: '200px' })
 
     document.querySelectorAll('.gallery-img[data-src]').forEach(img => imgObserver.observe(img))
+
+    // password gate
+    const gate = document.getElementById('gate')
+
+    function getCookie(name) {
+      return document.cookie.split('; ').find(r => r.startsWith(name + '='))?.split('=')[1]
+    }
+
+    function setCookie(name, value, days) {
+      const expires = new Date(Date.now() + days * 864e5).toUTCString()
+      document.cookie = `${name}=${value}; expires=${expires}; path=/`
+    }
+
+    if (getCookie('tynice_auth') === '1') {
+      gate.style.display = 'none'
+    } else {
+      const gateInput = document.getElementById('gate-input')
+      const gateError = document.getElementById('gate-error')
+
+      function checkGate() {
+        if (gateInput.value.trim().toLowerCase() === 'merribee') {
+          setCookie('tynice_auth', '1', 365)
+          gate.classList.add('hidden')
+          setTimeout(() => { gate.style.display = 'none' }, 500)
+        } else {
+          gateError.hidden = false
+          gateInput.value = ''
+          gateInput.focus()
+        }
+      }
+
+      document.getElementById('gate-btn').addEventListener('click', checkGate)
+      gateInput.addEventListener('keydown', e => { if (e.key === 'Enter') checkGate() })
+    }
   </script>
 </body>
 
