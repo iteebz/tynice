@@ -20,12 +20,7 @@
   <style>
     :root {
       --cream: #faf8f5;
-      --linen: #f0efed;
       --sand: #d8d8d8;
-      --taupe: #000;
-      --walnut: #000;
-      --espresso: #000;
-      --ink: #000;
       --shadow: 0 28px 70px -40px rgba(0, 0, 0, 0.18);
     }
 
@@ -74,7 +69,6 @@
       font-weight: 300;
       font-style: normal;
       letter-spacing: 0.08em;
-      color: #000;
       position: relative;
       margin-bottom: 1.2rem;
       animation: fadeIn 1.8s ease-out 0.2s both;
@@ -88,12 +82,11 @@
       transform: translateX(-50%);
       width: 60%;
       height: 1px;
-      background: linear-gradient(90deg, transparent, var(--taupe), transparent);
+      background: linear-gradient(90deg, transparent, #000, transparent);
     }
 
     .hero-copy {
       font-size: clamp(0.95rem, 1.6vw, 1.05rem);
-      color: #000;
       max-width: 690px;
       margin: 0 auto;
       line-height: 1.8;
@@ -103,7 +96,7 @@
     .section-break {
       width: 120px;
       height: 1px;
-      background: linear-gradient(90deg, transparent, var(--taupe), transparent);
+      background: linear-gradient(90deg, transparent, #000, transparent);
       margin: 3.5rem auto;
     }
 
@@ -117,13 +110,11 @@
       font-weight: 300;
       font-style: normal;
       font-size: clamp(2rem, 5vw, 3rem);
-      color: #000;
       letter-spacing: 0.04em;
       margin-bottom: 0.5rem;
     }
 
     .section-header p {
-      color: #000;
       font-size: 1rem;
       max-width: 560px;
       margin: 0 auto;
@@ -131,7 +122,7 @@
     }
 
     .frame {
-      border: 1px solid var(--taupe);
+      border: 1px solid #000;
       background: var(--cream);
       box-shadow: var(--shadow);
       margin-bottom: 1.5rem;
@@ -139,7 +130,6 @@
 
     .frame-inner {
       border: 1px solid var(--sand);
-      margin: 0;
       background: #000;
     }
 
@@ -157,12 +147,6 @@
       margin-bottom: 1.5rem;
     }
 
-    @media (max-width: 700px) {
-      .video-pair {
-        grid-template-columns: 1fr;
-      }
-    }
-
     .video-pair .frame {
       margin-bottom: 0;
     }
@@ -170,7 +154,6 @@
     .video-label {
       padding: 0.55rem 0.75rem;
       font-size: 0.8rem;
-      color: var(--walnut);
       letter-spacing: 0.1em;
       text-transform: lowercase;
       text-align: center;
@@ -184,6 +167,19 @@
       align-items: start;
     }
 
+    .gallery-title {
+      font-family: 'medusa', serif;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 300;
+      margin-bottom: 0.5rem;
+    }
+
+    .gallery-desc {
+      font-size: 0.95rem;
+      line-height: 1.7;
+      margin-bottom: 1.2rem;
+    }
+
     .gallery-photos {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -194,7 +190,7 @@
     .gallery-photos img {
       width: 100%;
       display: block;
-      border: 1px solid var(--taupe);
+      border: 1px solid #000;
       aspect-ratio: 3/4;
       object-fit: cover;
     }
@@ -202,7 +198,7 @@
     .gallery-cta {
       display: inline-block;
       padding: 0.6rem 1.5rem;
-      border: 1px solid var(--taupe);
+      border: 1px solid #000;
       font-family: 'Crimson Pro', Georgia, serif;
       font-size: 0.95rem;
       letter-spacing: 0.08em;
@@ -213,19 +209,26 @@
     .gallery-pin {
       margin-top: 0.5rem;
       font-size: 0.82rem;
-      color: #000;
       letter-spacing: 0.04em;
     }
 
-    @media (max-width: 700px) {
-      .gallery-columns {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-      }
+    .share-section {
+      text-align: center;
+      max-width: 560px;
+      margin: 0 auto;
+    }
 
-      .gallery-photos {
-        grid-template-columns: 1fr 1fr;
-      }
+    .share-cta {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: 0.7rem 2rem;
+      border: 1px solid #000;
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      color: #000;
+      text-decoration: none;
+      transition: border-color 0.2s, background 0.2s;
     }
 
     .thank-you {
@@ -239,12 +242,10 @@
       font-weight: 300;
       font-style: normal;
       font-size: clamp(2rem, 5vw, 3rem);
-      color: #000;
       margin-bottom: 1rem;
     }
 
     .thank-you p {
-      color: #000;
       font-size: 1.05rem;
       line-height: 1.85;
       margin-bottom: 0.8rem;
@@ -254,7 +255,6 @@
       font-family: 'medusa', serif;
       font-style: normal;
       font-size: 1.3rem;
-      color: #000;
       margin-top: 1.5rem;
     }
 
@@ -272,6 +272,17 @@
         padding: 0 0.5rem;
       }
     }
+
+    @media (max-width: 700px) {
+      .video-pair {
+        grid-template-columns: 1fr;
+      }
+
+      .gallery-columns {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+    }
   </style>
 </head>
 
@@ -284,14 +295,13 @@
       </p>
     </section>
 
-    <!-- wedding -->
+    <!-- wedding videos -->
     <section aria-labelledby="wedding-title">
       <div class="section-header">
         <h2 id="wedding-title">Wedding videos</h2>
       </div>
 
-      <!-- super 8 — feature film -->
-      <div class="frame" style="margin-bottom: 1.5rem;">
+      <div class="frame">
         <div class="frame-inner lead-video">
           <video controls playsinline preload="metadata">
             <source src="https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/tynice-super8.mov">
@@ -301,44 +311,37 @@
         <div class="video-label">super 8</div>
       </div>
 
-      <!-- trailer + tea ceremony side by side -->
       <div class="video-pair">
-        <div>
-          <div class="frame">
-            <div class="frame-inner lead-video">
-              <video controls playsinline preload="metadata">
-                <source src="https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/tynice-trailer.mov">
-                <p>Your browser can't play this video. <a href="https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/tynice-trailer.mov">Download it instead.</a></p>
-              </video>
-            </div>
-            <div class="video-label">trailer</div>
+        <div class="frame">
+          <div class="frame-inner lead-video">
+            <video controls playsinline preload="metadata">
+              <source src="https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/tynice-trailer.mov">
+              <p>Your browser can't play this video. <a href="https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/tynice-trailer.mov">Download it instead.</a></p>
+            </video>
           </div>
+          <div class="video-label">trailer</div>
         </div>
-        <div>
-          <div class="frame">
-            <div class="frame-inner lead-video">
-              <video controls playsinline preload="metadata">
-                <source src="https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/tynice-tea-ceremony.mov">
-                <p>Your browser can't play this video. <a href="https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/tynice-tea-ceremony.mov">Download it instead.</a></p>
-              </video>
-            </div>
-            <div class="video-label">tea ceremony</div>
+        <div class="frame">
+          <div class="frame-inner lead-video">
+            <video controls playsinline preload="metadata">
+              <source src="https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/tynice-tea-ceremony.mov">
+              <p>Your browser can't play this video. <a href="https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev/tynice-tea-ceremony.mov">Download it instead.</a></p>
+            </video>
           </div>
+          <div class="video-label">tea ceremony</div>
         </div>
       </div>
-
     </section>
 
     <div class="section-break"></div>
 
     <!-- photo galleries -->
-    <section>
+    <section aria-labelledby="photos-title">
       <div class="gallery-columns">
 
-        <!-- wedding photos -->
         <div>
-          <h2 style="font-family: 'medusa', serif; font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 300; color: #000; margin-bottom: 0.5rem;">Wedding photos</h2>
-          <p style="font-family: 'Crimson Pro', Georgia, serif; font-size: 0.95rem; color: var(--espresso); line-height: 1.7; margin-bottom: 1.2rem;">A romantic garden wedding in Merribee.</p>
+          <h2 class="gallery-title">Wedding photos</h2>
+          <p class="gallery-desc">A romantic garden wedding in Merribee.</p>
           <div class="gallery-photos">
             <img src="/wedding-54.jpg" alt="Wedding photo" loading="lazy">
             <img src="/wedding-18.jpg" alt="Wedding photo" loading="lazy">
@@ -348,10 +351,9 @@
           <a href="https://clients.saltatelier.com.au/IzLGkxN3wYgT9" target="_blank" rel="noopener" class="gallery-cta">View full gallery</a>
         </div>
 
-        <!-- tea ceremony photos -->
         <div>
-          <h2 style="font-family: 'medusa', serif; font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 300; color: #000; margin-bottom: 0.5rem;">Tea ceremony photos</h2>
-          <p style="font-family: 'Crimson Pro', Georgia, serif; font-size: 0.95rem; color: var(--espresso); line-height: 1.7; margin-bottom: 1.2rem;">A cultural celebration across both family homes.</p>
+          <h2 class="gallery-title">Tea ceremony photos</h2>
+          <p class="gallery-desc">A cultural celebration across both family homes.</p>
           <div class="gallery-photos">
             <img src="/ceremony-1.jpg" alt="Tea ceremony photo" loading="lazy">
             <img src="/ceremony-2.jpg" alt="Tea ceremony photo" loading="lazy">
@@ -367,13 +369,13 @@
 
     <div class="section-break"></div>
 
-    <!-- share your pov -->
-    <section aria-labelledby="share-title" style="text-align: center; max-width: 560px; margin: 0 auto;">
+    <!-- share -->
+    <section class="share-section" aria-labelledby="share-title">
       <div class="section-header">
         <h2 id="share-title">Share your pov</h2>
-        <p>We want the good stuff — a candid laugh, a quiet detail, the dance floor at its peak. Drop your photos and videos in our shared folder.</p>
+        <p>We want the good stuff — a candid laugh, a quiet detail, the dance floor at its peak. Drop your photos and videos in our shared album.</p>
       </div>
-      <a href="https://photos.app.goo.gl/BCDadBQsFtwMimpN7" target="_blank" rel="noopener" style="display: inline-block; margin-top: 1.5rem; padding: 0.7rem 2rem; border: 1px solid var(--taupe); font-family: 'Crimson Pro', Georgia, serif; font-size: 1rem; letter-spacing: 0.08em; color: #000; text-decoration: none; transition: border-color 0.2s, background 0.2s;">share to google photos</a>
+      <a href="https://photos.app.goo.gl/BCDadBQsFtwMimpN7" target="_blank" rel="noopener" class="share-cta">share to google photos</a>
     </section>
 
     <div class="section-break"></div>

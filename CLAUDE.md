@@ -1,66 +1,45 @@
 # tynice.com
 
-Wedding media site for Tyson & Janice. Guests upload photos/videos from the wedding day.
-
-## What This Is
-
-Our videographer lost the footage. This site collects whatever our guests captured. It's live at tynice.com — real people use it, so don't break things.
+Wedding memories site for Tyson & Janice. Guests can watch wedding videos and browse photos.
 
 ## Stack
 
-- **Frontend**: Single `index.html` with inline CSS/JS. Vanilla, no framework.
-- **Server**: `server.js` — plain Node.js HTTP server. No Express, no dependencies beyond `@aws-sdk/client-s3`.
-- **Storage**: Cloudflare R2 (S3-compatible). Uploads go direct via presigned URLs.
-- **Notes**: Supabase (guest messages). Client config in `public/db.js`.
-- **Hosting**: Fly.io. Deploy with `fly deploy`.
+- **Frontend**: Single `public/index.html` — inline CSS, no JS, no framework
+- **Videos**: Cloudflare R2 (`tynice` bucket on Tyson's account). Public base URL: `https://pub-1626a2fd71ac4f9c9ee945339681bd31.r2.dev`
+- **Hosting**: Cloudflare Pages. Deploy root is `public/`
+
+## Deploy
+
+```bash
+wrangler pages deploy public/ --project-name tynice
+```
+
+`media/videos/` is excluded via `.cfignore` — videos live on R2, not in the deploy.
 
 ## Development
 
 ```bash
-npm install
-npm start        # runs on :3000
+just dev   # serves public/ on localhost
+just ci    # biome check
 ```
 
-Needs `.env` with R2 credentials to work locally. Ask Tyson if you don't have it.
+## Design
 
-## Design Direction
+- Fonts: Medusa (headings, via Adobe Typekit `byo4nzt`), Crimson Pro (body, via Google Fonts)
+- Palette: cream (`#faf8f5`), sand (`#d8d8d8`), black. No border-radius anywhere.
+- Noise texture overlay via inline SVG data URI on `body::before`
 
-- Warm, elegant, editorial. Think linen textures, not tech startup.
-- Fonts: Cormorant Garamond (headings), Crimson Pro (body).
-- Palette: cream, sand, walnut, espresso. See CSS variables at top of `index.html`.
-- Zero border-radius. Sharp edges everywhere. This is intentional.
-- Mobile-first — most guests will upload from their phones.
+## Videos on R2
 
-## Rules
+| File | Label |
+|------|-------|
+| `tynice-super8.mov` | super 8 |
+| `tynice-trailer.mov` | trailer |
+| `tynice-tea-ceremony.mov` | tea ceremony |
 
-- Don't touch `server.js` or `lib/r2.js` unless fixing a bug. The backend is done.
-- Don't add frameworks, build tools, or npm dependencies for the frontend.
-- Don't change the upload flow — it works and people are using it.
-- All styling lives inline in `index.html` and `public/login.html`. Keep it that way.
-- Test on mobile viewport before calling anything done.
-- Keep it simple. This site has a finite lifespan.
-
-## What Could Use Love
-
-- Mobile upload experience — is the tap target obvious enough? Progress clear?
-- Gallery layout on different screen sizes
-- The "leave a note" section styling
-- Login page (`public/login.html`) — currently minimal
-- Overall polish, spacing, typography refinement
-- Lightbox experience on mobile
-
-## Setup
-
+Upload with:
 ```bash
-just install   # installs deps + activates commit hooks
-```
-
-## Git
-
-```bash
-# Commit format (enforced by hook)
-git commit -m "style(gallery): tighten card spacing on mobile"
-
-# Types: style, fix, feat, copy, chore
-# Keep commits atomic — one visual change per commit
+AWS_ACCESS_KEY_ID=... AWS_SECRET_ACCESS_KEY=... \
+aws s3 cp <file> s3://tynice/<file> \
+--endpoint-url https://80cc805d16aa1dd81cc6f459124b0c51.r2.cloudflarestorage.com
 ```
